@@ -9,6 +9,7 @@ import OdooModules from "@/components/OdooModules";
 import WhyUs from "@/components/WhyUs";
 import Testimonials from "@/components/Testimonials";
 import Blog from "@/components/Blog";
+import YouTubeFeed from "@/components/YouTubeFeed";
 import FAQ from "@/components/FAQ";
 import CTABanner from "@/components/CTABanner";
 import Contact from "@/components/Contact";
@@ -31,6 +32,7 @@ export default function Home() {
         <WhyUs />
         <Testimonials />
         <Blog />
+        <YouTubeFeed />
         <FAQ />
         <CTABanner />
         <Contact />
