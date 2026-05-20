@@ -1,12 +1,13 @@
 "use client";
+import Link from "next/link";
 import { AnimatedSection, StaggerGrid, StaggerItem } from "./AnimatedSection";
 import { useI18n } from "@/lib/i18n";
 
 const COURSES = [
-  { key: "c1", levelColor: "bg-green-500" },
-  { key: "c2", levelColor: "bg-red-500" },
-  { key: "c3", levelColor: "bg-blue-500" },
-  { key: "c4", levelColor: "bg-purple-500" },
+  { key: "c1", levelColor: "bg-green-500", slug: "accounting-fundamentals" },
+  { key: "c2", levelColor: "bg-red-500",   slug: "advanced-financial-analysis" },
+  { key: "c3", levelColor: "bg-blue-500",  slug: "odoo-erp-mastery" },
+  { key: "c4", levelColor: "bg-purple-500", slug: "tax-compliance" },
 ];
 
 const PRICES: Record<string, string> = {
@@ -58,12 +59,20 @@ export default function Academy() {
                       <div className="text-[#0D3B5C] font-black text-2xl">{PRICES[c.key]}</div>
                       <div className="text-gray-400 text-xs mt-0.5">Full program fee</div>
                     </div>
-                    <a
-                      href="#register"
-                      className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#F58220] text-white text-sm font-semibold rounded-full hover:bg-[#d9700f] group-hover:shadow-lg group-hover:shadow-orange-400/30 transition-all duration-300"
-                    >
-                      {t("academy.register_cta")} <i className="fas fa-arrow-right text-xs" />
-                    </a>
+                    <div className="flex items-center gap-2">
+                      <Link
+                        href={`/courses/${c.slug}`}
+                        className="inline-flex items-center gap-1.5 px-4 py-2 border border-[#0D3B5C] text-[#0D3B5C] text-xs font-semibold rounded-full hover:bg-[#0D3B5C] hover:text-white transition-all duration-300"
+                      >
+                        Details <i className="fas fa-external-link-alt text-xs" />
+                      </Link>
+                      <a
+                        href="#register"
+                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#F58220] text-white text-sm font-semibold rounded-full hover:bg-[#d9700f] group-hover:shadow-lg group-hover:shadow-orange-400/30 transition-all duration-300"
+                      >
+                        {t("academy.register_cta")} <i className="fas fa-arrow-right text-xs" />
+                      </a>
+                    </div>
                   </div>
                 </div>
               </div>
