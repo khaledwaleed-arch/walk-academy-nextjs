@@ -62,11 +62,21 @@ export default function Hero() {
               {t("hero.title1")}{" "}
               <span className="text-[#F58220] relative whitespace-nowrap">
                 {t("hero.title_accent")}
-                <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 300 12" fill="none">
+                <svg
+                  className="absolute w-full pointer-events-none"
+                  style={{
+                    bottom: "-10px",
+                    left: isRTL ? "auto" : 0,
+                    right: isRTL ? 0 : "auto",
+                    transform: isRTL ? "scaleX(-1)" : "none",
+                  }}
+                  viewBox="0 0 300 12"
+                  fill="none"
+                >
                   <path d="M1 8 C60 3, 140 3, 299 8" stroke="#F58220" strokeWidth="3" strokeLinecap="round" opacity="0.6" />
                 </svg>
               </span>{" "}
-              {t("hero.title2")}
+              <span className="whitespace-nowrap">{t("hero.title2")}</span>
             </motion.h1>
 
             <motion.p
