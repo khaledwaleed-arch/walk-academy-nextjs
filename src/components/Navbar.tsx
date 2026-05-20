@@ -2,20 +2,28 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import { useI18n, type Lang } from "@/lib/i18n";
 
-const links = [
-  { href: "#home",      label: "Home" },
-  { href: "#about",     label: "About" },
-  { href: "#services",  label: "Services" },
-  { href: "#academy",   label: "Academy" },
-  { href: "#blog",      label: "Blog" },
-  { href: "#contact",   label: "Contact" },
+const NAV_KEYS = [
+  { href: "#home",     key: "nav.home" },
+  { href: "#about",    key: "nav.about" },
+  { href: "#services", key: "nav.services" },
+  { href: "#academy",  key: "nav.academy" },
+  { href: "#blog",     key: "nav.blog" },
+  { href: "#contact",  key: "nav.contact" },
+];
+
+const LANGS: { code: Lang; label: string }[] = [
+  { code: "en", label: "EN" },
+  { code: "ar", label: "ع" },
+  { code: "fr", label: "FR" },
 ];
 
 export default function Navbar() {
-  const [scrolled, setScrolled]   = useState(false);
-  const [menuOpen, setMenuOpen]   = useState(false);
-  const [active, setActive]       = useState("#home");
+  const { t, lang, setLang, isRTL } = useI18n();
+  const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [active, setActive]     = useState("#home");
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -41,6 +49,7 @@ export default function Navbar() {
       initial={{ y: -80, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
+      dir={isRTL ? "rtl" : "ltr"}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
           ? "bg-[#092c46] shadow-2xl py-3 border-b border-[#F58220]/20"
@@ -49,20 +58,22 @@ export default function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
         {/* Logo */}
-        <a href="#home" className="flex items-center gap-3 group">
-          <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-white/10 flex items-center justify-center">
-            <span className="text-white font-black text-2xl leading-none">W</span>
-            <div className="absolute bottom-0 left-0 right-0 h-1 bg-[#F58220] group-hover:h-2 transition-all duration-300" />
-          </div>
-          <div className="flex flex-col leading-tight">
-            <span className="text-white font-extrabold text-xl tracking-tight">Walk</span>
-            <span className="text-[#F58220] text-xs font-semibold tracking-[0.15em] uppercase">Academy</span>
+        <a href="#home" className="flex items-center gap-2 group shrink-0">
+          <div className="relative h-11 flex items-center">
+            <Image
+              src="/logo.png"
+              alt="Walk Business"
+              width={150}
+              height={44}
+              className="h-11 w-auto object-contain drop-shadow-sm"
+              priority
+            />
           </div>
         </a>
 
-        {/* Desktop links */}
+        {/* Desktop nav links */}
         <ul className="hidden lg:flex items-center gap-1">
-          {links.map((l) => (
+          {NAV_KEYS.map((l) => (
             <li key={l.href}>
               <a
                 href={l.href}
@@ -72,7 +83,7 @@ export default function Navbar() {
                     : "text-white/75 hover:text-white hover:bg-white/10"
                 }`}
               >
-                {l.label}
+                {t(l.key)}
                 {active === l.href && (
                   <motion.div
                     layoutId="nav-indicator"
@@ -86,13 +97,19 @@ export default function Navbar() {
 
         {/* Right side */}
         <div className="flex items-center gap-3">
-          <div className="hidden sm:flex items-center gap-1 bg-white/10 rounded-full px-2 py-1">
-            {["EN", "AR", "FR"].map((lang) => (
+          {/* Language switcher */}
+          <div className="hidden sm:flex items-center gap-0.5 bg-white/10 rounded-full px-1.5 py-1">
+            {LANGS.map(({ code, label }) => (
               <button
-                key={lang}
-                className="px-3 py-1 rounded-full text-xs font-semibold text-white/70 hover:bg-[#F58220] hover:text-white transition-all duration-200 first:hover:bg-[#F58220]"
+                key={code}
+                onClick={() => setLang(code)}
+                className={`px-3 py-1 rounded-full text-xs font-bold transition-all duration-200 ${
+                  lang === code
+                    ? "bg-[#F58220] text-white shadow-sm"
+                    : "text-white/70 hover:bg-white/15 hover:text-white"
+                }`}
               >
-                {lang}
+                {label}
               </button>
             ))}
           </div>
@@ -102,7 +119,7 @@ export default function Navbar() {
             className="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 bg-[#F58220] text-white text-sm font-semibold rounded-full hover:bg-[#d9700f] hover:-translate-y-0.5 hover:shadow-lg hover:shadow-orange-500/30 transition-all duration-200"
           >
             <i className="fas fa-rocket text-xs" />
-            Register Now
+            {t("nav.register")}
           </a>
 
           {/* Hamburger */}
@@ -138,22 +155,40 @@ export default function Navbar() {
             className="lg:hidden overflow-hidden bg-[#092c46] border-t border-white/10"
           >
             <div className="px-6 py-4 flex flex-col gap-1">
-              {links.map((l) => (
+              {NAV_KEYS.map((l) => (
                 <a
                   key={l.href}
                   href={l.href}
                   onClick={() => setMenuOpen(false)}
                   className="px-4 py-3 rounded-xl text-white/80 hover:text-white hover:bg-white/10 font-medium transition"
                 >
-                  {l.label}
+                  {t(l.key)}
                 </a>
               ))}
+
+              {/* Mobile language switcher */}
+              <div className="flex items-center gap-2 mt-3 pt-3 border-t border-white/10">
+                {LANGS.map(({ code, label }) => (
+                  <button
+                    key={code}
+                    onClick={() => setLang(code)}
+                    className={`flex-1 py-2 rounded-xl text-sm font-bold transition-all duration-200 ${
+                      lang === code
+                        ? "bg-[#F58220] text-white"
+                        : "bg-white/10 text-white/70 hover:bg-white/20"
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+
               <a
                 href="#register"
                 onClick={() => setMenuOpen(false)}
-                className="mt-3 flex items-center justify-center gap-2 px-5 py-3 bg-[#F58220] text-white font-semibold rounded-full"
+                className="mt-2 flex items-center justify-center gap-2 px-5 py-3 bg-[#F58220] text-white font-semibold rounded-full"
               >
-                <i className="fas fa-rocket text-xs" /> Register Now
+                <i className="fas fa-rocket text-xs" /> {t("nav.register")}
               </a>
             </div>
           </motion.div>

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Cairo } from "next/font/google";
+import { I18nProvider } from "@/lib/i18n";
 import "./globals.css";
 
 const inter = Inter({
@@ -15,27 +16,27 @@ const cairo = Cairo({
 });
 
 export const metadata: Metadata = {
-  title: "Walk Academy | أكاديمية ووك | Accounting, Training & ERP Solutions",
+  title: "Walk Business | محاسبة · تدريب · استشارات · تدقيق · Odoo ERP",
   description:
-    "Walk Academy — Professional Accounting Academy for graduates. Services: Accounting, Training, Consulting, Audit & Odoo ERP. 85% job placement rate.",
+    "Walk Business — شريكك المتكامل للأعمال. خدمات المحاسبة والتدريب الاحترافي (Walk Academy) والاستشارات الإدارية والتدقيق وتطبيق Odoo ERP. Walk Business — Your complete partner for accounting, training, consulting, audit & Odoo ERP.",
   keywords:
-    "walk academy, accounting training egypt, odoo erp, audit consulting, محاسبة, أكاديمية محاسبة",
-  authors: [{ name: "Walk Academy" }],
+    "walk business, walk academy, accounting egypt, odoo erp, audit consulting, محاسبة, أكاديمية محاسبة, walk-business.com",
+  authors: [{ name: "Walk Business" }],
   openGraph: {
     type: "website",
-    siteName: "Walk Academy",
-    title: "Walk Academy — From Graduate to Certified Accountant",
+    siteName: "Walk Business",
+    title: "Walk Business — Accounting · Training · Consulting · Audit · Odoo ERP",
     description:
-      "Professional Accounting Academy. 85% job placement. Accounting, Training, Consulting, Audit & Odoo ERP.",
+      "Integrated professional services: accounting, Walk Academy training, management consulting, audit & Odoo ERP implementation.",
     url: "https://www.walk-business.com/",
     images: [{ url: "https://www.walk-business.com/assets/images/logo.png" }],
     locale: "ar_EG",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Walk Academy — From Graduate to Certified Accountant",
+    title: "Walk Business — Your Complete Growth Partner",
     description:
-      "Professional Accounting Academy. 85% job placement. Accounting, Training, Consulting, Audit & Odoo ERP.",
+      "Integrated professional services: accounting, Walk Academy training, management consulting, audit & Odoo ERP.",
     images: ["https://www.walk-business.com/assets/images/logo.png"],
   },
   robots: { index: true, follow: true },
@@ -49,6 +50,7 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${inter.variable} ${cairo.variable} antialiased`}
+      suppressHydrationWarning
     >
       <head>
         <link
@@ -65,12 +67,12 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
-              "@type": "EducationalOrganization",
-              name: "Walk Academy",
+              "@type": "ProfessionalService",
+              name: "Walk Business",
               url: "https://www.walk-business.com",
-              logo: "https://www.walk-business.com/assets/images/logo.png",
+              logo: "https://www.walk-business.com/logo.png",
               description:
-                "Professional Accounting Academy offering training, consulting, audit and Odoo ERP services.",
+                "Integrated professional services: accounting, professional training (Walk Academy), management consulting, audit & Odoo ERP implementation.",
               sameAs: [
                 "https://www.facebook.com/share/1FWUU3yLs7/",
                 "https://www.instagram.com/walk.academy",
@@ -82,7 +84,9 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-screen font-[var(--font-inter)]">{children}</body>
+      <body className="min-h-screen font-[var(--font-inter)]">
+        <I18nProvider>{children}</I18nProvider>
+      </body>
     </html>
   );
 }
