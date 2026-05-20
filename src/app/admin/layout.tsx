@@ -14,6 +14,34 @@ const NAV = [
     ),
   },
   {
+    label: "التسجيلات",
+    href: "/admin/registrations",
+    icon: (
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+    ),
+  },
+  {
+    label: "رسائل التواصل",
+    href: "/admin/contacts",
+    icon: (
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+      </svg>
+    ),
+  },
+  {
+    label: "الاستشارات",
+    href: "/admin/consultations",
+    icon: (
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+      </svg>
+    ),
+  },
+  { type: "separator" as const },
+  {
     label: "المقالات",
     icon: (
       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -46,36 +74,7 @@ const NAV = [
     ),
     children: [
       { label: "كل الصفحات", href: "/admin/pages" },
-      { label: "إضافة صفحة جديدة", href: "/admin/pages/new" },
     ],
-  },
-  { type: "separator" as const },
-  {
-    label: "التسجيلات",
-    href: "/admin?tab=registrations",
-    icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-      </svg>
-    ),
-  },
-  {
-    label: "رسائل التواصل",
-    href: "/admin?tab=contacts",
-    icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-      </svg>
-    ),
-  },
-  {
-    label: "الاستشارات",
-    href: "/admin?tab=consultations",
-    icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-      </svg>
-    ),
   },
 ];
 
@@ -87,10 +86,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [open, setOpen] = useState<string[]>([]);
   const [collapsed, setCollapsed] = useState(false);
 
+  const isLoginPage = pathname === "/admin/login";
+
   useEffect(() => {
     const t = sessionStorage.getItem("admin_token");
-    if (!t) { router.push("/admin"); setChecking(false); return; }
-    setToken(t);
+    if (!t && !isLoginPage) {
+      router.replace("/admin/login");
+    } else {
+      setToken(t);
+    }
     setChecking(false);
     // auto-expand active parent
     NAV.forEach((item) => {
@@ -100,9 +104,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     });
   }, [pathname]);
 
-  if (checking) return <div className="min-h-screen bg-[#1d2327] flex items-center justify-center"><div className="w-8 h-8 border-2 border-[#2271b1] border-t-transparent rounded-full animate-spin" /></div>;
-  if (!token && pathname !== "/admin") return null;
-  if (pathname === "/admin" && !token) return <>{children}</>;
+  // Login page — render without sidebar
+  if (isLoginPage) return <>{children}</>;
+
+  if (checking) {
+    return (
+      <div className="min-h-screen bg-[#1d2327] flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-[#2271b1] border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!token) return null;
 
   function toggle(label: string) {
     setOpen((o) => o.includes(label) ? o.filter((x) => x !== label) : [...o, label]);
@@ -111,6 +124,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   function isActive(href: string) {
     if (href === "/admin") return pathname === "/admin";
     return pathname.startsWith(href.split("?")[0]);
+  }
+
+  function logout() {
+    sessionStorage.removeItem("admin_token");
+    router.replace("/admin/login");
   }
 
   return (
@@ -145,16 +163,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     className={`w-full flex items-center gap-2 px-3 py-2 text-sm ${childActive ? "text-white bg-[#2c3338]" : "text-[#a7aaad] hover:text-white hover:bg-[#2c3338]"} transition-colors`}
                   >
                     <span className="flex-shrink-0">{item.icon}</span>
-                    {!collapsed && <><span className="flex-1 text-right">{item.label}</span><svg className={`w-3 h-3 transition-transform ${isOpen ? "rotate-90" : ""}`} fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" /></svg></>}
+                    {!collapsed && (
+                      <>
+                        <span className="flex-1 text-right">{item.label}</span>
+                        <svg className={`w-3 h-3 transition-transform ${isOpen ? "rotate-90" : ""}`} fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                        </svg>
+                      </>
+                    )}
                   </button>
                   {isOpen && !collapsed && (
                     <div className="bg-[#2c3338]">
                       {item.children.map((child) => (
-                        <Link
-                          key={child.href}
-                          href={child.href}
-                          className={`block px-8 py-1.5 text-xs ${isActive(child.href) ? "text-white" : "text-[#a7aaad] hover:text-white"}`}
-                        >
+                        <Link key={child.href} href={child.href}
+                          className={`block px-8 py-1.5 text-xs ${isActive(child.href) ? "text-white" : "text-[#a7aaad] hover:text-white"}`}>
                           {child.label}
                         </Link>
                       ))}
@@ -165,11 +187,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             }
             if ("href" in item) {
               return (
-                <Link
-                  key={item.href}
-                  href={item.href!}
-                  className={`flex items-center gap-2 px-3 py-2 text-sm ${isActive(item.href!) ? "text-white bg-[#2271b1]" : "text-[#a7aaad] hover:text-white hover:bg-[#2c3338]"} transition-colors`}
-                >
+                <Link key={item.href} href={item.href!}
+                  className={`flex items-center gap-2 px-3 py-2 text-sm ${isActive(item.href!) ? "text-white bg-[#2271b1]" : "text-[#a7aaad] hover:text-white hover:bg-[#2c3338]"} transition-colors`}>
                   <span className="flex-shrink-0">{item.icon}</span>
                   {!collapsed && <span>{item.label}</span>}
                 </Link>
@@ -180,10 +199,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
         {/* Logout */}
         <div className="border-t border-[#3c434a] p-2">
-          <button
-            onClick={() => { sessionStorage.removeItem("admin_token"); router.push("/admin"); }}
-            className="w-full flex items-center gap-2 px-3 py-2 text-xs text-[#a7aaad] hover:text-white hover:bg-[#2c3338] rounded transition-colors"
-          >
+          <button onClick={logout}
+            className="w-full flex items-center gap-2 px-3 py-2 text-xs text-[#a7aaad] hover:text-white hover:bg-[#2c3338] rounded transition-colors">
             <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
             </svg>
@@ -193,7 +210,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 min-w-0 overflow-auto">
+      <main className="flex-1 min-w-0 overflow-auto p-6">
         {children}
       </main>
     </div>
