@@ -1,12 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+import { verifyAdmin } from "@/lib/adminAuth";
 import { Pool } from "pg";
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 
-function auth(req: NextRequest) {
-  const h = req.headers.get("authorization") || "";
-  return h.replace("Bearer ", "") === process.env.ADMIN_TOKEN;
-}
+function auth(req: NextRequest) { return verifyAdmin(req); }
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   if (!auth(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
