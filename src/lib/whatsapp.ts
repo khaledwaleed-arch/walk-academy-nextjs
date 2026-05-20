@@ -3,7 +3,8 @@ export async function sendWhatsApp(message: string) {
   const token = process.env.GREENAPI_TOKEN;
   const to = process.env.WHATSAPP_TO;
   if (!instance || !token || !to) return;
-  const url = `https://${instance}.api.greenapi.com/waInstance${instance}/sendMessage/${token}`;
+  const apiUrl = process.env.GREENAPI_API_URL || `https://${instance.slice(0, 4)}.api.greenapi.com`;
+  const url = `${apiUrl}/waInstance${instance}/sendMessage/${token}`;
   try {
     await fetch(url, {
       method: 'POST',
