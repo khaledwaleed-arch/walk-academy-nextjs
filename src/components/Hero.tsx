@@ -2,12 +2,6 @@
 import { motion } from "framer-motion";
 import { useI18n } from "@/lib/i18n";
 
-const LANGS: { code: "en" | "ar" | "fr"; label: string }[] = [
-  { code: "ar", label: "AR" },
-  { code: "en", label: "EN" },
-  { code: "fr", label: "FR" },
-];
-
 const SERVICES = [
   { key: "hero_card.s1", icon: "fa-calculator",    color: "bg-blue-500/20",   text: "text-blue-300" },
   { key: "hero_card.s2", icon: "fa-graduation-cap", color: "bg-orange-500/20", text: "text-[#F58220]" },
@@ -17,7 +11,7 @@ const SERVICES = [
 ];
 
 export default function Hero() {
-  const { t, isRTL, lang, setLang } = useI18n();
+  const { t, isRTL } = useI18n();
 
   return (
     <section
@@ -180,36 +174,6 @@ export default function Hero() {
 
         </div>
       </div>
-
-      {/* Language switcher — anchored to section bottom-left, never overlaps card */}
-      <motion.div
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 1 }}
-        className="absolute bottom-8 left-8 z-20 hidden lg:block"
-      >
-        <div dir="ltr" className="bg-white/95 backdrop-blur rounded-2xl px-4 py-2.5 shadow-xl flex items-center gap-3">
-          <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
-            <i className="fas fa-globe text-green-600 text-sm" />
-          </div>
-          <div>
-            <div className="text-[10px] text-gray-400 font-medium leading-none mb-1">Language</div>
-            <div className="flex items-center gap-1">
-              {LANGS.map(({ code, label }) => (
-                <button
-                  key={code}
-                  onClick={() => setLang(code)}
-                  className={`px-2 py-0.5 rounded text-xs font-bold transition-all ${
-                    lang === code ? "bg-[#0D3B5C] text-white" : "text-gray-500 hover:bg-gray-100"
-                  }`}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      </motion.div>
 
       {/* Scroll indicator */}
       <motion.div
