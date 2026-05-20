@@ -47,10 +47,10 @@ export default function CTABanner() {
             <i className="fas fa-rocket" /> {t("cta.btn_enroll")}
           </a>
           <a
-            href="#contact"
+            href="/consultation"
             className="inline-flex items-center gap-2 px-8 py-4 bg-transparent text-white font-bold rounded-full text-lg border-2 border-white/60 hover:bg-white/15 hover:border-white hover:-translate-y-1 transition-all duration-300"
           >
-            <i className="fas fa-phone" /> {t("cta.btn_connect")}
+            <i className="fas fa-calendar-check" /> Book Free Consultation
           </a>
         </motion.div>
 

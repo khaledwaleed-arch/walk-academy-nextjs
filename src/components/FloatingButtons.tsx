@@ -25,6 +25,16 @@ export default function FloatingButtons() {
         <i className="fab fa-whatsapp" />
       </a>
 
+      {/* Book Consultation */}
+      <a
+        href="/consultation"
+        aria-label="Book Free Consultation"
+        className="fixed bottom-24 right-7 z-50 flex items-center gap-2 px-4 py-3 bg-[#F58220] text-white rounded-full shadow-xl shadow-orange-300/40 hover:scale-105 hover:bg-[#d9700f] transition-all duration-300 text-sm font-bold"
+      >
+        <i className="fas fa-calendar-check" />
+        <span className="hidden sm:inline">Free Consult</span>
+      </a>
+
       {/* Back to Top */}
       <AnimatePresence>
         {showTop && (
@@ -33,7 +43,7 @@ export default function FloatingButtons() {
             initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.5 }}
-            className="fixed bottom-24 right-7 z-50 w-11 h-11 bg-[#0D3B5C] text-white rounded-full flex items-center justify-center shadow-lg hover:bg-[#F58220] hover:-translate-y-1 transition-all duration-300"
+            className="fixed bottom-44 right-7 z-50 w-11 h-11 bg-[#0D3B5C] text-white rounded-full flex items-center justify-center shadow-lg hover:bg-[#F58220] hover:-translate-y-1 transition-all duration-300"
             aria-label="Back to top"
           >
             <i className="fas fa-chevron-up text-sm" />
