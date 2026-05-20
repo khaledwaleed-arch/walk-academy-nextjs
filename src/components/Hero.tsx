@@ -92,13 +92,13 @@ export default function Hero() {
             >
               <a
                 href="#services"
-                className="inline-flex items-center gap-2 px-8 py-4 bg-[#F58220] text-white font-bold rounded-full text-lg hover:bg-[#d9700f] hover:-translate-y-1 hover:shadow-2xl hover:shadow-orange-500/40 transition-all duration-300"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-[#F58220] text-white font-bold rounded-full text-lg hover:bg-[#d9700f] hover:-translate-y-1 hover:shadow-2xl hover:shadow-orange-500/40 transition-all duration-300 whitespace-nowrap"
               >
                 <i className="fas fa-th-large" /> {t("hero.cta_primary")}
               </a>
               <a
                 href="#contact"
-                className="inline-flex items-center gap-2 px-8 py-4 bg-white/10 text-white font-bold rounded-full text-lg border border-white/30 hover:bg-white/20 hover:-translate-y-1 backdrop-blur-sm transition-all duration-300"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-white/10 text-white font-bold rounded-full text-lg border border-white/30 hover:bg-white/20 hover:-translate-y-1 backdrop-blur-sm transition-all duration-300 whitespace-nowrap"
               >
                 <i className="fas fa-comments" /> {t("hero.cta_secondary")}
               </a>
@@ -132,7 +132,7 @@ export default function Hero() {
             className="relative hidden lg:flex justify-center"
           >
             {/* Floating badge top */}
-            <div className="animate-float absolute -top-6 -right-6 z-20 bg-white rounded-2xl px-5 py-3 shadow-2xl flex items-center gap-3">
+            <div className={`animate-float absolute -top-6 z-20 bg-white rounded-2xl px-5 py-3 shadow-2xl flex items-center gap-3 ${isRTL ? "-left-6" : "-right-6"}`}>
               <div className="w-10 h-10 bg-[#F58220]/15 rounded-xl flex items-center justify-center">
                 <i className="fas fa-award text-[#F58220] text-lg" />
               </div>
@@ -143,7 +143,7 @@ export default function Hero() {
             </div>
 
             {/* Floating badge bottom — functional language switcher */}
-            <div className="animate-float-delayed absolute -bottom-6 -left-6 z-20 bg-white rounded-2xl px-4 py-3 shadow-2xl flex items-center gap-3">
+            <div className={`animate-float-delayed absolute -bottom-6 z-20 bg-white rounded-2xl px-4 py-3 shadow-2xl flex items-center gap-3 ${isRTL ? "-right-6" : "-left-6"}`}>
               <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
                 <i className="fas fa-globe text-green-600 text-lg" />
               </div>
