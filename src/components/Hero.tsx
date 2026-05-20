@@ -110,6 +110,7 @@ export default function Hero() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.7, delay: 0.5 }}
               className="flex flex-wrap gap-6 mt-10"
+              dir="ltr"
             >
               {[
                 { icon: "fa-clock",       key: "hero_badges.b1" },
@@ -118,7 +119,7 @@ export default function Hero() {
               ].map((b) => (
                 <div key={b.key} className="flex items-center gap-2 text-white/60 text-sm">
                   <i className={`fas ${b.icon} text-[#F58220]`} />
-                  <span>{t(b.key)}</span>
+                  <span style={{ unicodeBidi: "isolate" }}>{t(b.key)}</span>
                 </div>
               ))}
             </motion.div>
@@ -131,7 +132,7 @@ export default function Hero() {
             transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
             className="relative hidden lg:flex justify-center"
           >
-            {/* Floating badge top */}
+            {/* Floating badge top — Certified Professional */}
             <div className={`animate-float absolute -top-6 z-20 bg-white rounded-2xl px-5 py-3 shadow-2xl flex items-center gap-3 ${isRTL ? "-left-6" : "-right-6"}`}>
               <div className="w-10 h-10 bg-[#F58220]/15 rounded-xl flex items-center justify-center">
                 <i className="fas fa-award text-[#F58220] text-lg" />
@@ -139,31 +140,6 @@ export default function Hero() {
               <div>
                 <div className="text-xs text-gray-500 font-medium">Certified</div>
                 <div className="text-sm text-[#0D3B5C] font-bold">Professional</div>
-              </div>
-            </div>
-
-            {/* Floating badge bottom — functional language switcher */}
-            <div className={`animate-float-delayed absolute -bottom-6 z-20 bg-white rounded-2xl px-4 py-3 shadow-2xl flex items-center gap-3 ${isRTL ? "-right-6" : "-left-6"}`}>
-              <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                <i className="fas fa-globe text-green-600 text-lg" />
-              </div>
-              <div>
-                <div className="text-xs text-gray-500 font-medium mb-1">Language</div>
-                <div className="flex items-center gap-1" dir="ltr">
-                  {LANGS.map(({ code, label }) => (
-                    <button
-                      key={code}
-                      onClick={() => setLang(code)}
-                      className={`px-2 py-0.5 rounded-md text-xs font-bold transition-all ${
-                        lang === code
-                          ? "bg-[#0D3B5C] text-white"
-                          : "text-gray-500 hover:bg-gray-100"
-                      }`}
-                    >
-                      {label}
-                    </button>
-                  ))}
-                </div>
               </div>
             </div>
 
@@ -204,6 +180,36 @@ export default function Hero() {
 
         </div>
       </div>
+
+      {/* Language switcher — anchored to section bottom-left, never overlaps card */}
+      <motion.div
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 1 }}
+        className="absolute bottom-8 left-8 z-20 hidden lg:block"
+      >
+        <div dir="ltr" className="bg-white/95 backdrop-blur rounded-2xl px-4 py-2.5 shadow-xl flex items-center gap-3">
+          <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+            <i className="fas fa-globe text-green-600 text-sm" />
+          </div>
+          <div>
+            <div className="text-[10px] text-gray-400 font-medium leading-none mb-1">Language</div>
+            <div className="flex items-center gap-1">
+              {LANGS.map(({ code, label }) => (
+                <button
+                  key={code}
+                  onClick={() => setLang(code)}
+                  className={`px-2 py-0.5 rounded text-xs font-bold transition-all ${
+                    lang === code ? "bg-[#0D3B5C] text-white" : "text-gray-500 hover:bg-gray-100"
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </motion.div>
 
       {/* Scroll indicator */}
       <motion.div

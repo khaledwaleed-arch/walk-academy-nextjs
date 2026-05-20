@@ -30,9 +30,14 @@ function CountUp({ target, suffix }: { target: number; suffix: string }) {
   }, [inView, target]);
 
   return (
-    <div ref={ref} dir="ltr" style={{ direction: "ltr" }} className="flex flex-row items-center justify-center gap-1 text-[#F58220]">
-      <span className="text-4xl lg:text-5xl font-black tabular-nums">{count}</span>
-      <span className="text-2xl lg:text-3xl font-black">{suffix}</span>
+    <div ref={ref} className="flex items-center justify-center text-[#F58220]">
+      <span
+        dir="ltr"
+        style={{ direction: "ltr", unicodeBidi: "isolate", display: "inline-flex", alignItems: "baseline", gap: "2px" }}
+      >
+        <span className="text-4xl lg:text-5xl font-black tabular-nums">{count}</span>
+        <span className="text-2xl lg:text-3xl font-black">{suffix}</span>
+      </span>
     </div>
   );
 }
