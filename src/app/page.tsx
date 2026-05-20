@@ -9,6 +9,7 @@ import OdooModules from "@/components/OdooModules";
 import WhyUs from "@/components/WhyUs";
 import Testimonials from "@/components/Testimonials";
 import Blog from "@/components/Blog";
+import FAQ from "@/components/FAQ";
 import CTABanner from "@/components/CTABanner";
 import Contact from "@/components/Contact";
 import Register from "@/components/Register";
@@ -30,6 +31,7 @@ export default function Home() {
         <WhyUs />
         <Testimonials />
         <Blog />
+        <FAQ />
         <CTABanner />
         <Contact />
         <Register />

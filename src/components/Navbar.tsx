@@ -65,7 +65,7 @@ export default function Navbar() {
               alt="Walk Business"
               width={150}
               height={44}
-              className="h-11 w-auto object-contain drop-shadow-sm"
+              className="h-11 w-auto object-contain brightness-0 invert"
               priority
             />
           </div>

@@ -1,12 +1,13 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
+import { useI18n } from "@/lib/i18n";
 
-const stats = [
-  { target: 85,  suffix: "%",   label: "Graduates Struggle Without Practical Training" },
-  { target: 7,   suffix: "M+",  label: "Companies Use Odoo Worldwide" },
-  { target: 70,  suffix: "%+",  label: "Employers Prefer ERP-Skilled Accountants" },
-  { target: 6,   suffix: " Mo", label: "Average Time to Land a Job After Training" },
+const STATS = [
+  { target: 85, suffix: "%",   key: "stats.s1" },
+  { target: 7,  suffix: "M+",  key: "stats.s2" },
+  { target: 70, suffix: "%+",  key: "stats.s3" },
+  { target: 6,  suffix: " Mo", key: "stats.s4" },
 ];
 
 function CountUp({ target, suffix }: { target: number; suffix: string }) {
@@ -37,6 +38,7 @@ function CountUp({ target, suffix }: { target: number; suffix: string }) {
 }
 
 export default function StatsBar() {
+  const { t } = useI18n();
   return (
     <div className="bg-[#092c46] py-14 relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-r from-[#F58220]/5 via-transparent to-[#F58220]/5" />
@@ -48,15 +50,15 @@ export default function StatsBar() {
           variants={{ visible: { transition: { staggerChildren: 0.12 } } }}
           className="grid grid-cols-2 lg:grid-cols-4 gap-8"
         >
-          {stats.map((s, i) => (
+          {STATS.map((s) => (
             <motion.div
-              key={i}
+              key={s.key}
               variants={{ hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6 } } }}
               className="text-center group"
             >
               <CountUp target={s.target} suffix={s.suffix} />
               <p className="text-white/60 text-sm mt-3 leading-snug max-w-[180px] mx-auto">
-                {s.label}
+                {t(s.key)}
               </p>
               <div className="w-8 h-0.5 bg-[#F58220]/40 mx-auto mt-3 group-hover:w-16 group-hover:bg-[#F58220] transition-all duration-500" />
             </motion.div>

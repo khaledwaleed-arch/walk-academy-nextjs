@@ -1,10 +1,11 @@
 "use client";
 import { motion } from "framer-motion";
+import { useI18n } from "@/lib/i18n";
 
 export default function CTABanner() {
+  const { t, isRTL } = useI18n();
   return (
-    <div className="relative py-24 overflow-hidden bg-gradient-to-br from-[#F58220] via-[#e8741a] to-[#d9700f] animate-gradient">
-      {/* Decorative shapes */}
+    <div dir={isRTL ? "rtl" : "ltr"} className="relative py-24 overflow-hidden bg-gradient-to-br from-[#F58220] via-[#e8741a] to-[#d9700f] animate-gradient">
       <div className="absolute top-0 left-0 w-72 h-72 bg-white/10 rounded-full -translate-x-1/2 -translate-y-1/2" />
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-black/10 rounded-full translate-x-1/3 translate-y-1/3" />
       <div className="absolute inset-0 opacity-5"
@@ -19,7 +20,7 @@ export default function CTABanner() {
           transition={{ duration: 0.6 }}
           className="text-3xl lg:text-5xl font-black text-white mb-5 leading-tight"
         >
-          Start Now: Become the Professional Accountant the Market Needs!
+          {t("cta.title")}
         </motion.h2>
 
         <motion.p
@@ -29,9 +30,7 @@ export default function CTABanner() {
           transition={{ duration: 0.6, delay: 0.1 }}
           className="text-xl text-white/85 mb-10 max-w-2xl mx-auto leading-relaxed"
         >
-          Don&apos;t just rely on theoretical lectures. Go beyond theory — master Odoo,
-          excel in any accounting system, and prepare for real opportunities with our
-          full support.
+          {t("cta.subtitle")}
         </motion.p>
 
         <motion.div
@@ -45,13 +44,13 @@ export default function CTABanner() {
             href="#register"
             className="inline-flex items-center gap-2 px-8 py-4 bg-white text-[#F58220] font-bold rounded-full text-lg hover:bg-[#0D3B5C] hover:text-white hover:-translate-y-1 hover:shadow-2xl transition-all duration-300"
           >
-            <i className="fas fa-rocket" /> Enroll Now
+            <i className="fas fa-rocket" /> {t("cta.btn_enroll")}
           </a>
           <a
             href="#contact"
             className="inline-flex items-center gap-2 px-8 py-4 bg-transparent text-white font-bold rounded-full text-lg border-2 border-white/60 hover:bg-white/15 hover:border-white hover:-translate-y-1 transition-all duration-300"
           >
-            <i className="fas fa-phone" /> Connect With Us
+            <i className="fas fa-phone" /> {t("cta.btn_connect")}
           </a>
         </motion.div>
 
@@ -62,10 +61,10 @@ export default function CTABanner() {
           transition={{ duration: 0.6, delay: 0.3 }}
           className="flex flex-wrap gap-8 justify-center"
         >
-          {["Go Beyond Theory", "Master Odoo ERP", "Get Certified"].map((pill) => (
-            <div key={pill} className="flex items-center gap-2 text-white/90">
+          {["cta.pill1", "cta.pill2", "cta.pill3"].map((key) => (
+            <div key={key} className="flex items-center gap-2 text-white/90">
               <i className="fas fa-check-circle text-white/60" />
-              <span className="font-semibold text-lg">{pill}</span>
+              <span className="font-semibold text-lg">{t(key)}</span>
             </div>
           ))}
         </motion.div>

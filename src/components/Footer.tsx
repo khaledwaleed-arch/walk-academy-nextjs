@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import Image from "next/image";
 import { useI18n } from "@/lib/i18n";
 
@@ -28,6 +29,14 @@ const socials = [
 
 export default function Footer() {
   const { t, isRTL } = useI18n();
+  const [subEmail, setSubEmail] = useState("");
+  const [subStatus, setSubStatus] = useState<"idle"|"ok"|"err">("idle");
+
+  async function handleSubscribe(e: React.FormEvent) {
+    e.preventDefault();
+    const res = await fetch("/api/subscribe", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: subEmail }) });
+    setSubStatus(res.ok ? "ok" : "err");
+  }
 
   return (
     <footer className="bg-[#092c46] text-white/70" dir={isRTL ? "rtl" : "ltr"}>
@@ -103,16 +112,23 @@ export default function Footer() {
               {t("footer.newsletter")}
             </h4>
             <p className="text-sm mb-4 leading-relaxed">{t("footer.newsletter_desc")}</p>
-            <div className="flex gap-2">
-              <input
-                type="email"
-                placeholder={t("footer.email_placeholder")}
-                className="flex-1 px-4 py-2.5 rounded-full bg-white/8 border border-white/15 text-sm text-white placeholder-white/40 focus:border-[#F58220] focus:outline-none focus:bg-white/12 transition-all"
-              />
-              <button className="px-4 py-2.5 bg-[#F58220] text-white rounded-full text-sm font-semibold hover:bg-[#d9700f] transition-colors shrink-0">
-                <i className="fas fa-paper-plane" />
-              </button>
-            </div>
+            {subStatus === "ok" ? (
+              <p className="text-green-400 text-sm"><i className="fas fa-check me-2" />Subscribed!</p>
+            ) : (
+              <form className="flex gap-2" onSubmit={handleSubscribe}>
+                <input
+                  type="email"
+                  required
+                  value={subEmail}
+                  onChange={(e) => setSubEmail(e.target.value)}
+                  placeholder={t("footer.email_placeholder")}
+                  className="flex-1 px-4 py-2.5 rounded-full bg-white/8 border border-white/15 text-sm text-white placeholder-white/40 focus:border-[#F58220] focus:outline-none focus:bg-white/12 transition-all"
+                />
+                <button type="submit" className="px-4 py-2.5 bg-[#F58220] text-white rounded-full text-sm font-semibold hover:bg-[#d9700f] transition-colors shrink-0">
+                  <i className="fas fa-paper-plane" />
+                </button>
+              </form>
+            )}
           </div>
         </div>
 
@@ -120,8 +136,8 @@ export default function Footer() {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 text-xs text-white/40">
           <p>&copy; {new Date().getFullYear()} Walk Business. {t("footer.rights")}.</p>
           <div className="flex gap-5">
-            <a href="#" className="hover:text-[#F58220] transition-colors">{t("footer.privacy")}</a>
-            <a href="#" className="hover:text-[#F58220] transition-colors">{t("footer.terms")}</a>
+            <a href="/privacy" className="hover:text-[#F58220] transition-colors">{t("footer.privacy")}</a>
+            <a href="/terms" className="hover:text-[#F58220] transition-colors">{t("footer.terms")}</a>
           </div>
         </div>
       </div>
