@@ -17,7 +17,7 @@ const translations = {
     },
     hero: {
       badge: "Comprehensive Business Solutions",
-      title1: "Walk Business —",
+      title1: "Walk Business",
       title_accent: "Your Complete",
       title2: "Growth Partner",
       subtitle:
@@ -221,7 +221,7 @@ const translations = {
     },
     hero: {
       badge: "حلول أعمال متكاملة",
-      title1: "ووك بيزنس —",
+      title1: "ووك بيزنس",
       title_accent: "شريكك المتكامل",
       title2: "للنمو والتميز",
       subtitle:
@@ -409,7 +409,7 @@ const translations = {
     },
     hero: {
       badge: "Solutions Business Complètes",
-      title1: "Walk Business —",
+      title1: "Walk Business",
       title_accent: "Votre Partenaire",
       title2: "de Croissance",
       subtitle:

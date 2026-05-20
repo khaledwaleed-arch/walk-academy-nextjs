@@ -2,6 +2,12 @@
 import { motion } from "framer-motion";
 import { useI18n } from "@/lib/i18n";
 
+const LANGS: { code: "en" | "ar" | "fr"; label: string }[] = [
+  { code: "ar", label: "AR" },
+  { code: "en", label: "EN" },
+  { code: "fr", label: "FR" },
+];
+
 const SERVICES = [
   { key: "hero_card.s1", icon: "fa-calculator",    color: "bg-blue-500/20",   text: "text-blue-300" },
   { key: "hero_card.s2", icon: "fa-graduation-cap", color: "bg-orange-500/20", text: "text-[#F58220]" },
@@ -11,7 +17,7 @@ const SERVICES = [
 ];
 
 export default function Hero() {
-  const { t, isRTL } = useI18n();
+  const { t, isRTL, lang, setLang } = useI18n();
 
   return (
     <section
@@ -136,14 +142,28 @@ export default function Hero() {
               </div>
             </div>
 
-            {/* Floating badge bottom */}
-            <div className="animate-float-delayed absolute -bottom-6 -left-6 z-20 bg-white rounded-2xl px-5 py-3 shadow-2xl flex items-center gap-3">
-              <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+            {/* Floating badge bottom — functional language switcher */}
+            <div className="animate-float-delayed absolute -bottom-6 -left-6 z-20 bg-white rounded-2xl px-4 py-3 shadow-2xl flex items-center gap-3">
+              <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
                 <i className="fas fa-globe text-green-600 text-lg" />
               </div>
               <div>
-                <div className="text-xs text-gray-500 font-medium">Languages</div>
-                <div className="text-sm text-[#0D3B5C] font-bold">AR · EN · FR</div>
+                <div className="text-xs text-gray-500 font-medium mb-1">Language</div>
+                <div className="flex items-center gap-1" dir="ltr">
+                  {LANGS.map(({ code, label }) => (
+                    <button
+                      key={code}
+                      onClick={() => setLang(code)}
+                      className={`px-2 py-0.5 rounded-md text-xs font-bold transition-all ${
+                        lang === code
+                          ? "bg-[#0D3B5C] text-white"
+                          : "text-gray-500 hover:bg-gray-100"
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -169,7 +189,7 @@ export default function Hero() {
                 ))}
               </ul>
 
-              <div className="mt-6 pt-5 border-t border-white/10 flex items-center justify-between">
+              <div className="mt-6 pt-5 border-t border-white/10 flex items-center justify-between" dir="ltr">
                 <div className="flex -space-x-2">
                   {["W", "A", "L", "K"].map((c) => (
                     <div key={c} className="w-8 h-8 rounded-full bg-gradient-to-br from-[#0D3B5C] to-[#F58220] border-2 border-white/20 flex items-center justify-center text-white text-xs font-bold">
