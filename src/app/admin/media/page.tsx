@@ -33,6 +33,8 @@ export default function MediaPage() {
   const [altText, setAltText] = useState("");
   const [altSaving, setAltSaving] = useState(false);
   const [view, setView] = useState<"grid" | "list">("grid");
+  const [search, setSearch] = useState("");
+  const [typeFilter, setTypeFilter] = useState("all");
   const fileRef = useRef<HTMLInputElement>(null);
 
   const load = async () => {
@@ -107,7 +109,16 @@ export default function MediaPage() {
       <div className="flex-1 overflow-y-auto p-6">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-semibold text-gray-900">مكتبة الوسائط</h1>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
+            {/* Search */}
+            <input type="search" value={search} onChange={e => setSearch(e.target.value)}
+              placeholder="بحث..." className="border border-gray-300 rounded px-3 py-1.5 text-sm w-40 focus:outline-none focus:border-[#2271b1]" />
+            <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)}
+              className="border border-gray-300 rounded px-2 py-1.5 text-sm bg-white focus:outline-none">
+              <option value="all">كل الأنواع</option>
+              <option value="image">صور</option>
+              <option value="application">ملفات</option>
+            </select>
             {/* View toggle */}
             <div className="flex border border-gray-300 rounded overflow-hidden">
               <button onClick={() => setView("grid")}
@@ -152,89 +163,90 @@ export default function MediaPage() {
         </div>
 
         {/* Content */}
-        {loading ? (
-          <div className="text-center py-12 text-gray-400">جارٍ التحميل...</div>
-        ) : items.length === 0 ? (
-          <div className="text-center py-12 text-gray-400">
-            <svg className="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            <p>لا توجد وسائط مرفوعة</p>
-          </div>
-        ) : view === "grid" ? (
-          <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
-            {items.map(item => (
-              <button key={item.id} onClick={() => selectItem(item)}
-                className={`relative aspect-square rounded overflow-hidden border-2 transition-all group ${
-                  selected?.id === item.id ? "border-[#2271b1] ring-2 ring-[#2271b1]/30" : "border-transparent hover:border-gray-300"
-                }`}>
-                {item.mime_type.startsWith("image/") ? (
-                  <img src={item.url} alt={item.alt_text || item.original_name}
-                    className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full bg-gray-100 flex flex-col items-center justify-center gap-1 text-gray-400">
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    <span className="text-xs px-1 truncate w-full text-center">{item.original_name.split(".").pop()?.toUpperCase()}</span>
-                  </div>
-                )}
-                {selected?.id === item.id && (
-                  <div className="absolute top-1 right-1 w-5 h-5 bg-[#2271b1] rounded-full flex items-center justify-center">
-                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                )}
-              </button>
-            ))}
-          </div>
-        ) : (
-          <div className="bg-white border border-gray-200 rounded shadow-sm overflow-hidden">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b border-gray-200">
-                <tr>
-                  <th className="text-right px-4 py-3 font-medium text-gray-600 w-16"></th>
-                  <th className="text-right px-4 py-3 font-medium text-gray-600">الاسم</th>
-                  <th className="text-right px-4 py-3 font-medium text-gray-600 hidden md:table-cell">النوع</th>
-                  <th className="text-right px-4 py-3 font-medium text-gray-600 hidden md:table-cell">الحجم</th>
-                  <th className="text-right px-4 py-3 font-medium text-gray-600 hidden lg:table-cell">التاريخ</th>
-                  <th className="px-4 py-3"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {items.map(item => (
-                  <tr key={item.id} onClick={() => selectItem(item)}
-                    className={`border-b border-gray-100 cursor-pointer hover:bg-gray-50 ${selected?.id === item.id ? "bg-blue-50" : ""}`}>
-                    <td className="px-4 py-2 w-16">
-                      {item.mime_type.startsWith("image/") ? (
-                        <img src={item.url} alt="" className="w-10 h-10 object-cover rounded" />
-                      ) : (
-                        <div className="w-10 h-10 bg-gray-200 rounded flex items-center justify-center text-xs text-gray-500">
-                          {item.mime_type.split("/")[1]?.toUpperCase()}
-                        </div>
-                      )}
-                    </td>
-                    <td className="px-4 py-2 font-medium text-gray-800">{item.original_name}</td>
-                    <td className="px-4 py-2 text-gray-500 hidden md:table-cell">{item.mime_type}</td>
-                    <td className="px-4 py-2 text-gray-500 hidden md:table-cell">{fmtSize(item.size_bytes)}</td>
-                    <td className="px-4 py-2 text-gray-500 text-xs hidden lg:table-cell">
-                      {new Date(item.created_at).toLocaleDateString("ar-EG")}
-                    </td>
-                    <td className="px-4 py-2">
-                      <button onClick={e => { e.stopPropagation(); deleteItem(item.id); }}
-                        className="text-red-400 hover:text-red-600 p-1">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                      </button>
-                    </td>
+        {(() => {
+          const filtered = items.filter(item => {
+            const matchSearch = !search || item.original_name.toLowerCase().includes(search.toLowerCase());
+            const matchType = typeFilter === "all" || item.mime_type.startsWith(typeFilter);
+            return matchSearch && matchType;
+          });
+          return loading ? (
+            <div className="text-center py-12 text-gray-400">جارٍ التحميل...</div>
+          ) : filtered.length === 0 ? (
+            <div className="text-center py-12 text-gray-400">لا توجد وسائط مطابقة</div>
+          ) : view === "grid" ? (
+            <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+              {filtered.map(item => (
+                <button key={item.id} onClick={() => selectItem(item)}
+                  className={`relative aspect-square rounded overflow-hidden border-2 transition-all group ${
+                    selected?.id === item.id ? "border-[#2271b1] ring-2 ring-[#2271b1]/30" : "border-transparent hover:border-gray-300"
+                  }`}>
+                  {item.mime_type.startsWith("image/") ? (
+                    <img src={item.url} alt={item.alt_text || item.original_name} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full bg-gray-100 flex flex-col items-center justify-center gap-1 text-gray-400">
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                      <span className="text-xs px-1 truncate w-full text-center">{item.original_name.split(".").pop()?.toUpperCase()}</span>
+                    </div>
+                  )}
+                  {selected?.id === item.id && (
+                    <div className="absolute top-1 right-1 w-5 h-5 bg-[#2271b1] rounded-full flex items-center justify-center">
+                      <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                  )}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div className="bg-white border border-gray-200 rounded shadow-sm overflow-hidden">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-50 border-b border-gray-200">
+                  <tr>
+                    <th className="text-right px-4 py-3 font-medium text-gray-600 w-16"></th>
+                    <th className="text-right px-4 py-3 font-medium text-gray-600">الاسم</th>
+                    <th className="text-right px-4 py-3 font-medium text-gray-600 hidden md:table-cell">النوع</th>
+                    <th className="text-right px-4 py-3 font-medium text-gray-600 hidden md:table-cell">الحجم</th>
+                    <th className="text-right px-4 py-3 font-medium text-gray-600 hidden lg:table-cell">التاريخ</th>
+                    <th className="px-4 py-3"></th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+                </thead>
+                <tbody>
+                  {filtered.map(item => (
+                    <tr key={item.id} onClick={() => selectItem(item)}
+                      className={`border-b border-gray-100 cursor-pointer hover:bg-gray-50 ${selected?.id === item.id ? "bg-blue-50" : ""}`}>
+                      <td className="px-4 py-2 w-16">
+                        {item.mime_type.startsWith("image/") ? (
+                          <img src={item.url} alt="" className="w-10 h-10 object-cover rounded" />
+                        ) : (
+                          <div className="w-10 h-10 bg-gray-200 rounded flex items-center justify-center text-xs text-gray-500">
+                            {item.mime_type.split("/")[1]?.toUpperCase()}
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-4 py-2 font-medium text-gray-800">{item.original_name}</td>
+                      <td className="px-4 py-2 text-gray-500 hidden md:table-cell">{item.mime_type}</td>
+                      <td className="px-4 py-2 text-gray-500 hidden md:table-cell">{fmtSize(item.size_bytes)}</td>
+                      <td className="px-4 py-2 text-gray-500 text-xs hidden lg:table-cell">
+                        {new Date(item.created_at).toLocaleDateString("ar-EG")}
+                      </td>
+                      <td className="px-4 py-2">
+                        <button onClick={e => { e.stopPropagation(); deleteItem(item.id); }}
+                          className="text-red-400 hover:text-red-600 p-1">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          );
+        })()}
       </div>
 
       {/* Details sidebar */}

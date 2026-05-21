@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import MediaPicker from "@/components/admin/MediaPicker";
@@ -20,23 +20,30 @@ function useToken() {
 }
 
 interface Category { id: number; name: string; }
+interface Tag { id: number; name: string; slug: string; }
 
 interface PostData {
   title: string;
   slug: string;
   content: string;
   excerpt: string;
-  status: "draft" | "published";
+  status: "draft" | "published" | "scheduled";
   featured_image_url: string;
   meta_title: string;
   meta_description: string;
   category_ids: number[];
+  tag_ids: number[];
+  author_name: string;
+  visibility: "public" | "private" | "password";
+  password: string;
+  scheduled_at: string;
 }
 
 const EMPTY: PostData = {
   title: "", slug: "", content: "", excerpt: "",
   status: "draft", featured_image_url: "",
-  meta_title: "", meta_description: "", category_ids: [],
+  meta_title: "", meta_description: "", category_ids: [], tag_ids: [],
+  author_name: "Walk Academy", visibility: "public", password: "", scheduled_at: "",
 };
 
 export default function PostEditor({ postId }: { postId?: string }) {
@@ -46,18 +53,23 @@ export default function PostEditor({ postId }: { postId?: string }) {
   const [data, setData] = useState<PostData>(EMPTY);
   const [slugEdited, setSlugEdited] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [tags, setTags] = useState<Tag[]>([]);
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState("");
   const [mediaPicker, setMediaPicker] = useState<"featured" | "editor" | null>(null);
   const [publishedAt, setPublishedAt] = useState<string | null>(null);
+  const [tagInput, setTagInput] = useState("");
+  const [tagSuggestions, setTagSuggestions] = useState<Tag[]>([]);
+  const [showSchedule, setShowSchedule] = useState(false);
+  const tagInputRef = useRef<HTMLInputElement>(null);
 
-  // Load categories
   useEffect(() => {
     fetch("/api/admin/categories", { headers: { Authorization: `Bearer ${token}` } })
       .then(r => r.json()).then(setCategories);
+    fetch("/api/admin/tags", { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.json()).then(setTags);
   }, [token]);
 
-  // Load post if editing
   useEffect(() => {
     if (!postId) return;
     fetch(`/api/admin/posts/${postId}`, { headers: { Authorization: `Bearer ${token}` } })
@@ -73,33 +85,77 @@ export default function PostEditor({ postId }: { postId?: string }) {
           meta_title: p.meta_title || "",
           meta_description: p.meta_description || "",
           category_ids: p.category_ids || [],
+          tag_ids: p.tag_ids || [],
+          author_name: p.author_name || "Walk Academy",
+          visibility: p.visibility || "public",
+          password: p.password || "",
+          scheduled_at: p.scheduled_at ? p.scheduled_at.slice(0, 16) : "",
         });
         setSlugEdited(true);
         setPublishedAt(p.published_at);
+        if (p.status === "scheduled") setShowSchedule(true);
       });
   }, [postId, token]);
 
-  // Auto-generate slug from title
   useEffect(() => {
     if (!slugEdited && data.title) {
       setData(d => ({ ...d, slug: slugify(d.title) }));
     }
   }, [data.title, slugEdited]);
 
-  const save = useCallback(async (status: "draft" | "published") => {
+  // Tag autocomplete
+  useEffect(() => {
+    if (!tagInput.trim()) { setTagSuggestions([]); return; }
+    const q = tagInput.toLowerCase();
+    setTagSuggestions(
+      tags.filter(t => !data.tag_ids.includes(t.id) && t.name.toLowerCase().includes(q)).slice(0, 5)
+    );
+  }, [tagInput, tags, data.tag_ids]);
+
+  const addTag = async (tagOrName: Tag | string) => {
+    let tag: Tag;
+    if (typeof tagOrName === "string") {
+      const name = tagOrName.trim();
+      if (!name) return;
+      const sl = slugify(name) || name.toLowerCase().replace(/\s+/g, "-");
+      const res = await fetch("/api/admin/tags", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ name, slug: sl }),
+      });
+      if (!res.ok) return;
+      tag = await res.json();
+      setTags(prev => [...prev, tag]);
+    } else {
+      tag = tagOrName;
+    }
+    setData(d => ({ ...d, tag_ids: [...d.tag_ids, tag.id] }));
+    setTagInput("");
+    setTagSuggestions([]);
+  };
+
+  const removeTag = (id: number) => setData(d => ({ ...d, tag_ids: d.tag_ids.filter(x => x !== id) }));
+
+  const save = useCallback(async (saveStatus: "draft" | "published" | "scheduled") => {
     setSaving(true);
     setSaveMsg("");
-    const payload = { ...data, status };
+    const payload = {
+      ...data,
+      status: saveStatus,
+      scheduled_at: saveStatus === "scheduled" ? data.scheduled_at : null,
+    };
     const url = postId ? `/api/admin/posts/${postId}` : "/api/admin/posts";
     const method = postId ? "PUT" : "POST";
     const res = await fetch(url, {
-      method, headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      method,
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
     const saved = await res.json();
     setSaving(false);
     if (res.ok) {
-      setSaveMsg(status === "published" ? "تم النشر" : "تم الحفظ كمسودة");
+      const msgs = { published: "تم النشر", draft: "تم الحفظ كمسودة", scheduled: "تم الجدولة" };
+      setSaveMsg(msgs[saveStatus]);
       setTimeout(() => setSaveMsg(""), 3000);
       if (!postId && saved.id) router.replace(`/admin/posts/${saved.id}`);
     } else {
@@ -107,9 +163,7 @@ export default function PostEditor({ postId }: { postId?: string }) {
     }
   }, [data, postId, token, router]);
 
-  const handleImageInsert = () => setMediaPicker("editor");
-
-  const onMediaSelect = (url: string, alt: string) => {
+  const onMediaSelect = (url: string) => {
     if (mediaPicker === "featured") {
       setData(d => ({ ...d, featured_image_url: url }));
     } else {
@@ -127,11 +181,12 @@ export default function PostEditor({ postId }: { postId?: string }) {
     }));
   };
 
+  const selectedTags = tags.filter(t => data.tag_ids.includes(t.id));
+
   return (
     <div className="flex gap-0 -m-6 min-h-screen" dir="rtl">
       {/* Main editing area */}
       <div className="flex-1 overflow-y-auto px-8 py-6 bg-white min-h-screen">
-        {/* Title */}
         <input
           type="text"
           placeholder="أدخل عنوان المقال"
@@ -139,8 +194,6 @@ export default function PostEditor({ postId }: { postId?: string }) {
           onChange={e => setData(d => ({ ...d, title: e.target.value }))}
           className="w-full text-3xl font-bold text-gray-900 border-none outline-none placeholder-gray-300 mb-2 bg-transparent"
         />
-
-        {/* Permalink */}
         <div className="flex items-center gap-2 text-sm text-gray-500 mb-6 pb-4 border-b border-gray-100">
           <span>الرابط الثابت:</span>
           <span className="text-gray-400">/blog/</span>
@@ -152,36 +205,78 @@ export default function PostEditor({ postId }: { postId?: string }) {
             dir="ltr"
           />
         </div>
-
-        {/* Rich Editor */}
         <RichEditor
           value={data.content}
           onChange={c => setData(d => ({ ...d, content: c }))}
-          onImageInsert={handleImageInsert}
+          onImageInsert={() => setMediaPicker("editor")}
           placeholder="ابدأ الكتابة هنا..."
         />
       </div>
 
       {/* Right Sidebar */}
       <div className="w-72 flex-shrink-0 bg-gray-50 border-r border-gray-200 overflow-y-auto">
+
         {/* Publish Box */}
         <div className="border-b border-gray-200">
           <div className="bg-gray-100 px-4 py-2 flex items-center justify-between">
             <span className="text-sm font-semibold text-gray-700">نشر</span>
           </div>
           <div className="p-4 space-y-3">
+            {/* Status */}
             <div className="flex items-center gap-2 text-sm text-gray-600">
               <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <span>الحالة:</span>
-              <select value={data.status} onChange={e => setData(d => ({ ...d, status: e.target.value as any }))}
+              <select value={data.status} onChange={e => {
+                const v = e.target.value as PostData["status"];
+                setData(d => ({ ...d, status: v }));
+                if (v === "scheduled") setShowSchedule(true);
+                else setShowSchedule(false);
+              }}
                 className="border border-gray-300 rounded px-1 py-0.5 text-xs bg-white focus:outline-none">
                 <option value="draft">مسودة</option>
                 <option value="published">منشور</option>
+                <option value="scheduled">مجدول</option>
               </select>
             </div>
-            {publishedAt && (
+
+            {/* Visibility */}
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0zM2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+              <span>الظهور:</span>
+              <select value={data.visibility} onChange={e => setData(d => ({ ...d, visibility: e.target.value as PostData["visibility"] }))}
+                className="border border-gray-300 rounded px-1 py-0.5 text-xs bg-white focus:outline-none">
+                <option value="public">عام</option>
+                <option value="private">خاص</option>
+                <option value="password">بكلمة مرور</option>
+              </select>
+            </div>
+
+            {data.visibility === "password" && (
+              <div>
+                <input type="text" value={data.password}
+                  onChange={e => setData(d => ({ ...d, password: e.target.value }))}
+                  placeholder="كلمة المرور"
+                  className="w-full border border-gray-300 rounded px-2 py-1.5 text-xs focus:outline-none focus:border-[#2271b1]" />
+              </div>
+            )}
+
+            {/* Author */}
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+              <span>الكاتب:</span>
+              <input type="text" value={data.author_name}
+                onChange={e => setData(d => ({ ...d, author_name: e.target.value }))}
+                className="flex-1 border border-gray-300 rounded px-1 py-0.5 text-xs bg-white focus:outline-none focus:border-[#2271b1]" />
+            </div>
+
+            {/* Published date */}
+            {publishedAt && !showSchedule && (
               <div className="text-xs text-gray-500 flex items-center gap-2">
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -189,20 +284,39 @@ export default function PostEditor({ postId }: { postId?: string }) {
                 <span>نُشر: {new Date(publishedAt).toLocaleDateString("ar-EG")}</span>
               </div>
             )}
+
+            {/* Schedule date picker */}
+            {showSchedule && (
+              <div>
+                <label className="text-xs font-medium text-gray-600 block mb-1">موعد النشر</label>
+                <input type="datetime-local" value={data.scheduled_at}
+                  onChange={e => setData(d => ({ ...d, scheduled_at: e.target.value }))}
+                  className="w-full border border-gray-300 rounded px-2 py-1.5 text-xs focus:outline-none focus:border-[#2271b1]" />
+              </div>
+            )}
+
             {saveMsg && (
               <div className={`text-xs px-2 py-1 rounded ${saveMsg.includes("خطأ") ? "bg-red-50 text-red-600" : "bg-green-50 text-green-600"}`}>
                 {saveMsg}
               </div>
             )}
+
             <div className="flex gap-2 pt-1">
               <button onClick={() => save("draft")} disabled={saving}
                 className="flex-1 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-xs py-2 px-3 rounded disabled:opacity-50">
                 حفظ مسودة
               </button>
-              <button onClick={() => save("published")} disabled={saving}
-                className="flex-1 bg-[#2271b1] hover:bg-[#135e96] text-white text-xs py-2 px-3 rounded disabled:opacity-50">
-                {saving ? "..." : data.status === "published" ? "تحديث" : "نشر"}
-              </button>
+              {data.status === "scheduled" ? (
+                <button onClick={() => save("scheduled")} disabled={saving}
+                  className="flex-1 bg-[#2271b1] hover:bg-[#135e96] text-white text-xs py-2 px-3 rounded disabled:opacity-50">
+                  {saving ? "..." : "جدولة"}
+                </button>
+              ) : (
+                <button onClick={() => save("published")} disabled={saving}
+                  className="flex-1 bg-[#2271b1] hover:bg-[#135e96] text-white text-xs py-2 px-3 rounded disabled:opacity-50">
+                  {saving ? "..." : data.status === "published" ? "تحديث" : "نشر"}
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -217,8 +331,10 @@ export default function PostEditor({ postId }: { postId?: string }) {
               <div className="relative">
                 <img src={data.featured_image_url} alt="" className="w-full rounded border border-gray-200 object-cover" />
                 <button onClick={() => setData(d => ({ ...d, featured_image_url: "" }))}
-                  className="absolute top-1 left-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs leading-none">
-                  ×
+                  className="absolute top-1 left-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">×</button>
+                <button onClick={() => setMediaPicker("featured")}
+                  className="mt-2 w-full text-xs text-[#2271b1] hover:underline text-center block">
+                  تغيير الصورة
                 </button>
               </div>
             ) : (
@@ -246,6 +362,54 @@ export default function PostEditor({ postId }: { postId?: string }) {
                 <span className="text-sm text-gray-700">{cat.name}</span>
               </label>
             ))}
+          </div>
+        </div>
+
+        {/* Tags */}
+        <div className="border-b border-gray-200">
+          <div className="bg-gray-100 px-4 py-2">
+            <span className="text-sm font-semibold text-gray-700">الوسوم</span>
+          </div>
+          <div className="p-4">
+            {/* Selected tags */}
+            {selectedTags.length > 0 && (
+              <div className="flex flex-wrap gap-1 mb-2">
+                {selectedTags.map(t => (
+                  <span key={t.id} className="flex items-center gap-1 bg-[#2271b1] text-white text-xs px-2 py-0.5 rounded-full">
+                    {t.name}
+                    <button onClick={() => removeTag(t.id)} className="hover:opacity-70 leading-none">×</button>
+                  </span>
+                ))}
+              </div>
+            )}
+            {/* Tag input */}
+            <div className="relative">
+              <input
+                ref={tagInputRef}
+                type="text"
+                value={tagInput}
+                onChange={e => setTagInput(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === "Enter" || e.key === ",") {
+                    e.preventDefault();
+                    if (tagInput.trim()) addTag(tagInput.trim());
+                  }
+                }}
+                placeholder="أضف وسوماً (Enter لإضافة)"
+                className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:border-[#2271b1]"
+              />
+              {tagSuggestions.length > 0 && (
+                <div className="absolute top-full right-0 left-0 bg-white border border-gray-200 rounded shadow-lg z-10 mt-0.5">
+                  {tagSuggestions.map(t => (
+                    <button key={t.id} onClick={() => addTag(t)}
+                      className="w-full text-right px-3 py-1.5 text-sm hover:bg-gray-50 text-gray-700 block">
+                      {t.name}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            <p className="text-xs text-gray-400 mt-1">افصل الوسوم بفاصلة أو Enter</p>
           </div>
         </div>
 
@@ -292,7 +456,6 @@ export default function PostEditor({ postId }: { postId?: string }) {
         </div>
       </div>
 
-      {/* Media Picker Modal */}
       {mediaPicker && (
         <MediaPicker
           token={token}

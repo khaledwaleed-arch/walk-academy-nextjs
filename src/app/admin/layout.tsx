@@ -52,6 +52,7 @@ const NAV = [
       { label: "كل المقالات", href: "/admin/posts" },
       { label: "إضافة مقال جديد", href: "/admin/posts/new" },
       { label: "التصنيفات", href: "/admin/categories" },
+      { label: "الوسوم", href: "/admin/tags" },
     ],
   },
   {
