@@ -2,82 +2,85 @@
 import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
+import { LanguageProvider, useLanguage } from "@/contexts/LanguageContext";
 
-const NAV = [
-  {
-    label: "لوحة التحكم",
-    href: "/admin",
-    icon: (
-      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
-      </svg>
-    ),
-  },
-  {
-    label: "التسجيلات",
-    href: "/admin/registrations",
-    icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-      </svg>
-    ),
-  },
-  {
-    label: "رسائل التواصل",
-    href: "/admin/contacts",
-    icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-      </svg>
-    ),
-  },
-  {
-    label: "الاستشارات",
-    href: "/admin/consultations",
-    icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-      </svg>
-    ),
-  },
-  { type: "separator" as const },
-  {
-    label: "المقالات",
-    icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-      </svg>
-    ),
-    children: [
-      { label: "كل المقالات", href: "/admin/posts" },
-      { label: "إضافة مقال جديد", href: "/admin/posts/new" },
-      { label: "التصنيفات", href: "/admin/categories" },
-      { label: "الوسوم", href: "/admin/tags" },
-    ],
-  },
-  {
-    label: "الوسائط",
-    icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-      </svg>
-    ),
-    children: [
-      { label: "مكتبة الوسائط", href: "/admin/media" },
-    ],
-  },
-  {
-    label: "الصفحات",
-    icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-      </svg>
-    ),
-    children: [
-      { label: "كل الصفحات", href: "/admin/pages" },
-    ],
-  },
-];
+function NavItems({ t }: { t: (k: any) => string }) {
+  return [
+    {
+      label: t("dashboard"),
+      href: "/admin",
+      icon: (
+        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+        </svg>
+      ),
+    },
+    {
+      label: t("registrations"),
+      href: "/admin/registrations",
+      icon: (
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+      ),
+    },
+    {
+      label: t("contactMessages"),
+      href: "/admin/contacts",
+      icon: (
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+        </svg>
+      ),
+    },
+    {
+      label: t("consultations"),
+      href: "/admin/consultations",
+      icon: (
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+        </svg>
+      ),
+    },
+    { type: "separator" as const },
+    {
+      label: t("posts"),
+      icon: (
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+      ),
+      children: [
+        { label: t("allPosts"), href: "/admin/posts" },
+        { label: t("addNewPost"), href: "/admin/posts/new" },
+        { label: t("categories"), href: "/admin/categories" },
+        { label: t("tags"), href: "/admin/tags" },
+      ],
+    },
+    {
+      label: t("media"),
+      icon: (
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+      ),
+      children: [
+        { label: t("mediaLibrary"), href: "/admin/media" },
+      ],
+    },
+    {
+      label: t("pages"),
+      icon: (
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+        </svg>
+      ),
+      children: [
+        { label: t("allPages"), href: "/admin/pages" },
+      ],
+    },
+  ];
+}
 
 function SidebarContent({
   pathname, open, collapsed, toggle, isActive, logout,
@@ -89,6 +92,9 @@ function SidebarContent({
   isActive: (h: string) => boolean;
   logout: () => void;
 }) {
+  const { t, lang, setLang } = useLanguage();
+  const NAV = NavItems({ t });
+
   return (
     <div className="flex flex-col h-full">
       <nav className="flex-1 py-2 overflow-y-auto">
@@ -107,7 +113,7 @@ function SidebarContent({
                   <span className="flex-shrink-0">{item.icon}</span>
                   {!collapsed && (
                     <>
-                      <span className="flex-1 text-right">{item.label}</span>
+                      <span className="flex-1 text-start">{item.label}</span>
                       <svg className={`w-3 h-3 transition-transform ${isOpen ? "rotate-90" : ""}`} fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
                       </svg>
@@ -139,22 +145,50 @@ function SidebarContent({
           }
         })}
       </nav>
-      <div className="border-t border-[#3c434a] p-2">
+
+      {/* Language toggle + Logout */}
+      <div className="border-t border-[#3c434a] p-2 space-y-1">
+        {/* Language toggle */}
+        {!collapsed && (
+          <div className="flex items-center gap-1 px-3 py-1">
+            <svg className="w-3.5 h-3.5 text-[#a7aaad]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+            </svg>
+            <button onClick={() => setLang("en")}
+              className={`text-xs px-1.5 py-0.5 rounded transition-colors ${lang === "en" ? "bg-[#2271b1] text-white" : "text-[#a7aaad] hover:text-white"}`}>
+              EN
+            </button>
+            <span className="text-[#3c434a]">|</span>
+            <button onClick={() => setLang("ar")}
+              className={`text-xs px-1.5 py-0.5 rounded transition-colors ${lang === "ar" ? "bg-[#2271b1] text-white" : "text-[#a7aaad] hover:text-white"}`}>
+              AR
+            </button>
+          </div>
+        )}
+        {collapsed && (
+          <button onClick={() => setLang(lang === "en" ? "ar" : "en")}
+            className="w-full flex items-center justify-center px-3 py-1.5 text-xs text-[#a7aaad] hover:text-white hover:bg-[#2c3338] rounded transition-colors font-bold">
+            {lang === "en" ? "AR" : "EN"}
+          </button>
+        )}
+
+        {/* Logout */}
         <button onClick={logout}
           className="w-full flex items-center gap-2 px-3 py-2 text-xs text-[#a7aaad] hover:text-white hover:bg-[#2c3338] rounded transition-colors">
           <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
           </svg>
-          {!collapsed && <span>تسجيل الخروج</span>}
+          {!collapsed && <span>{t("logout")}</span>}
         </button>
       </div>
     </div>
   );
 }
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+function AdminLayoutInner({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
+  const { t, dir, isRTL } = useLanguage();
   const [token, setToken] = useState<string | null>(null);
   const [checking, setChecking] = useState(true);
   const [open, setOpen] = useState<string[]>([]);
@@ -164,21 +198,27 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const isLoginPage = pathname === "/admin/login";
 
   useEffect(() => {
-    const t = sessionStorage.getItem("admin_token");
-    if (!t && !isLoginPage) {
+    const t2 = sessionStorage.getItem("admin_token");
+    if (!t2 && !isLoginPage) {
       router.replace("/admin/login");
     } else {
-      setToken(t);
+      setToken(t2);
     }
     setChecking(false);
-    NAV.forEach((item) => {
-      if ("children" in item && item.children?.some((c) => pathname.startsWith(c.href))) {
-        setOpen((o) => [...o, item.label]);
+    // Auto-expand active section
+    const NAV_LABELS = ["posts", "media", "pages"] as const;
+    const CHILDREN_MAP: Record<string, string[]> = {
+      posts: ["/admin/posts", "/admin/categories", "/admin/tags"],
+      media: ["/admin/media"],
+      pages: ["/admin/pages"],
+    };
+    NAV_LABELS.forEach(label => {
+      if (CHILDREN_MAP[label].some(href => pathname.startsWith(href))) {
+        setOpen(o => o.includes(label) ? o : [...o, label]);
       }
     });
   }, [pathname]);
 
-  // Close mobile drawer on route change
   useEffect(() => { setMobileOpen(false); }, [pathname]);
 
   if (isLoginPage) return <>{children}</>;
@@ -194,7 +234,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (!token) return null;
 
   function toggle(label: string) {
-    setOpen((o) => o.includes(label) ? o.filter((x) => x !== label) : [...o, label]);
+    setOpen(o => o.includes(label) ? o.filter(x => x !== label) : [...o, label]);
   }
 
   function isActive(href: string) {
@@ -207,10 +247,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     router.replace("/admin/login");
   }
 
-  return (
-    <div className="min-h-screen bg-[#f0f0f1] flex" dir="rtl">
+  const sidebarProps = { pathname, open, collapsed, toggle, isActive, logout };
 
-      {/* ── Desktop sidebar ── */}
+  return (
+    <div className="min-h-screen bg-[#f0f0f1] flex" dir={dir}>
+      {/* Desktop sidebar */}
       <aside className={`hidden md:flex ${collapsed ? "w-14" : "w-56"} min-h-screen bg-[#1d2327] flex-shrink-0 transition-all duration-200 flex-col`}>
         <div className="h-14 flex items-center px-3 border-b border-[#3c434a]">
           {!collapsed && <span className="text-white font-bold text-sm flex-1">Walk Academy</span>}
@@ -220,17 +261,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </svg>
           </button>
         </div>
-        <SidebarContent pathname={pathname} open={open} collapsed={collapsed} toggle={toggle} isActive={isActive} logout={logout} />
+        <SidebarContent {...sidebarProps} />
       </aside>
 
-      {/* ── Mobile top bar ── */}
+      {/* Mobile top bar */}
       <div className="md:hidden fixed top-0 right-0 left-0 z-30 bg-[#1d2327] h-12 flex items-center px-3 gap-3 border-b border-[#3c434a]">
         <button onClick={() => setMobileOpen(true)} className="text-[#a7aaad] hover:text-white p-1">
           <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
             <path fillRule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
           </svg>
         </button>
-        <span className="text-white font-bold text-sm flex-1 text-right">Walk Academy</span>
+        <span className="text-white font-bold text-sm flex-1 text-center">Walk Academy</span>
         <button onClick={logout} className="text-[#a7aaad] hover:text-white p-1">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7" />
@@ -238,9 +279,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </button>
       </div>
 
-      {/* ── Mobile drawer overlay ── */}
+      {/* Mobile drawer */}
       {mobileOpen && (
-        <div className="md:hidden fixed inset-0 z-40 flex" dir="rtl">
+        <div className="md:hidden fixed inset-0 z-40 flex" dir={dir}>
           <div className="w-64 bg-[#1d2327] flex flex-col h-full shadow-2xl">
             <div className="h-12 flex items-center px-3 border-b border-[#3c434a]">
               <span className="text-white font-bold text-sm flex-1">Walk Academy</span>
@@ -250,17 +291,24 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 </svg>
               </button>
             </div>
-            <SidebarContent pathname={pathname} open={open} collapsed={false} toggle={toggle} isActive={isActive} logout={logout} />
+            <SidebarContent {...sidebarProps} />
           </div>
-          {/* backdrop */}
           <div className="flex-1 bg-black/50" onClick={() => setMobileOpen(false)} />
         </div>
       )}
 
-      {/* ── Main content ── */}
+      {/* Main content */}
       <main className="flex-1 min-w-0 overflow-auto md:p-6 p-4 mt-12 md:mt-0">
         {children}
       </main>
     </div>
+  );
+}
+
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <LanguageProvider>
+      <AdminLayoutInner>{children}</AdminLayoutInner>
+    </LanguageProvider>
   );
 }
