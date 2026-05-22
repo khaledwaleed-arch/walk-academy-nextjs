@@ -65,9 +65,6 @@ export default async function CoursePage({
       <header className="bg-gradient-to-br from-[#0D3B5C] to-[#1a5a8a] text-white py-16 px-6">
         <div className="max-w-4xl mx-auto">
           <div className="flex flex-wrap items-center gap-3 mb-4">
-            <span className={`px-3 py-1 rounded-full text-white text-xs font-bold ${levelBg[course.levelColor] || "bg-gray-500"}`}>
-              {en.level}
-            </span>
             <span className="px-3 py-1 rounded-full bg-white/10 text-white text-xs font-semibold">
               <i className="fas fa-clock mr-1" />{en.duration}
             </span>
@@ -210,9 +207,6 @@ export default async function CoursePage({
                   href={`/courses/${c.slug}`}
                   className="group bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
                 >
-                  <span className={`inline-block px-2 py-0.5 rounded-full text-white text-xs font-bold mb-2 ${levelBg[c.levelColor] || "bg-gray-500"}`}>
-                    {c.en.level}
-                  </span>
                   <h3 className="text-[#0D3B5C] font-bold text-sm group-hover:text-[#1a5a8a] transition-colors leading-snug">
                     {c.en.title}
                   </h3>

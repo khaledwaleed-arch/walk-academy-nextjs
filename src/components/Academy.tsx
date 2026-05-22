@@ -32,9 +32,6 @@ export default function Academy() {
               <div className="group bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
                 <div className="bg-gradient-to-br from-[#0D3B5C] to-[#1a5a8a] p-7 relative overflow-hidden">
                   <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
-                  <span className={`inline-block px-3 py-1 rounded-full text-white text-xs font-bold mb-3 ${c.levelColor}`}>
-                    {t(`academy.courses.${c.key}.level`)}
-                  </span>
                   <h3 className="text-white text-xl font-bold">{t(`academy.courses.${c.key}.title`)}</h3>
                 </div>
 
