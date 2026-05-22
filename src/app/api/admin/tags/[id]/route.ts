@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyAdmin } from "@/lib/adminAuth";
-import { Pool } from "pg";
+import { getPool } from "@/lib/db";
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const pool = getPool();
 function auth(req: NextRequest) { return verifyAdmin(req); }
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
