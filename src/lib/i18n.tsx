@@ -140,7 +140,7 @@ const translations = {
         c4: { title: "Tax & Compliance", level: "Intermediate", duration: "3 Weeks", price: "349" },
       },
     },
-    common: { certificate: "Certificate", online: "Online" },
+    common: { certificate: "Certificate", online: "Online", in_person: "In Person" },
     why: {
       badge: "Why Choose Us",
       title: "Why Choose Walk Business?",
@@ -328,7 +328,7 @@ const translations = {
         c4: { title: "الضرائب والامتثال", level: "متوسط", duration: "3 أسابيع", price: "349" },
       },
     },
-    common: { certificate: "شهادة", online: "أونلاين" },
+    common: { certificate: "شهادة", online: "أونلاين", in_person: "حضوري" },
     why: {
       badge: "لماذا نختارنا",
       title: "لماذا تختار ووك بيزنس؟",
@@ -516,7 +516,7 @@ const translations = {
         c4: { title: "Fiscalité & Conformité", level: "Intermédiaire", duration: "3 Semaines", price: "349" },
       },
     },
-    common: { certificate: "Certificat", online: "En Ligne" },
+    common: { certificate: "Certificat", online: "En Ligne", in_person: "En Présentiel" },
     why: {
       badge: "Pourquoi Nous Choisir",
       title: "Pourquoi Choisir Walk Business?",

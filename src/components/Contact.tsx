@@ -25,8 +25,15 @@ export default function Contact() {
     const body = Object.fromEntries(fd.entries());
     try {
       const res = await fetch("/api/contact", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+      if (res.ok) {
+        (e.target as HTMLFormElement).reset();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const gtag = (window as any).gtag;
+        if (typeof gtag === "function") {
+          gtag("event", "contact", { event_category: "contact_form" });
+        }
+      }
       setStatus(res.ok ? "ok" : "err");
-      if (res.ok) (e.target as HTMLFormElement).reset();
     } catch {
       setStatus("err");
     }

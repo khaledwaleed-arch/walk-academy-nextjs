@@ -50,6 +50,11 @@ export default function ConsultationPage() {
         body: JSON.stringify(form),
       });
       if (!res.ok) throw new Error("Server error");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const gtag = (window as any).gtag;
+      if (typeof gtag === "function") {
+        gtag("event", "generate_lead", { event_category: "consultation", event_label: form.service });
+      }
       setStatus("success");
     } catch {
       setStatus("error");

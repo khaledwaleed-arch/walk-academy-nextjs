@@ -5,16 +5,12 @@ import { useI18n } from "@/lib/i18n";
 
 const COURSES = [
   { key: "c1", levelColor: "bg-green-500", slug: "accounting-fundamentals" },
-  { key: "c2", levelColor: "bg-red-500",   slug: "advanced-financial-analysis" },
   { key: "c3", levelColor: "bg-blue-500",  slug: "odoo-erp-mastery" },
-  { key: "c4", levelColor: "bg-purple-500", slug: "tax-compliance" },
 ];
 
 const PRICES: Record<string, string> = {
-  c1: "2,999 EGP",
-  c2: "4,999 EGP",
-  c3: "5,999 EGP",
-  c4: "3,499 EGP",
+  c1: "3,500 EGP",
+  c3: "5,000 EGP",
 };
 
 export default function Academy() {
@@ -51,7 +47,7 @@ export default function Academy() {
                       <i className="fas fa-certificate text-[#F58220]" /> {t("common.certificate")}
                     </span>
                     <span className="flex items-center gap-1.5">
-                      <i className="fas fa-video text-[#F58220]" /> {t("common.online")}
+                      <i className="fas fa-map-marker-alt text-[#F58220]" /> {t("common.in_person")}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">

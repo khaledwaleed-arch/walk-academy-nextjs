@@ -16,7 +16,6 @@ const NAV_KEYS = [
 const LANGS: { code: Lang; label: string }[] = [
   { code: "en", label: "EN" },
   { code: "ar", label: "ع" },
-  { code: "fr", label: "FR" },
 ];
 
 export default function Navbar() {

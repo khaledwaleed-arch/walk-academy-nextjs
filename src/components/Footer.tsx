@@ -35,6 +35,13 @@ export default function Footer() {
   async function handleSubscribe(e: React.FormEvent) {
     e.preventDefault();
     const res = await fetch("/api/subscribe", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: subEmail }) });
+    if (res.ok) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const gtag = (window as any).gtag;
+      if (typeof gtag === "function") {
+        gtag("event", "subscribe", { event_category: "newsletter" });
+      }
+    }
     setSubStatus(res.ok ? "ok" : "err");
   }
 

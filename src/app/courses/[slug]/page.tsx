@@ -75,7 +75,7 @@ export default async function CoursePage({
               <i className="fas fa-certificate mr-1" />Certificate
             </span>
             <span className="px-3 py-1 rounded-full bg-white/10 text-white text-xs font-semibold">
-              <i className="fas fa-video mr-1" />Online
+              <i className="fas fa-map-marker-alt mr-1" />In Person
             </span>
           </div>
           <h1 className="text-3xl lg:text-5xl font-black mb-3">{en.title}</h1>

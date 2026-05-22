@@ -27,6 +27,13 @@ export default function Register() {
     const body = Object.fromEntries(fd.entries());
     try {
       const res = await fetch("/api/register", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+      if (res.ok) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const gtag = (window as any).gtag;
+        if (typeof gtag === "function") {
+          gtag("event", "generate_lead", { event_category: "registration", event_label: body.course as string || "unknown" });
+        }
+      }
       setStatus(res.ok ? "ok" : "err");
     } catch {
       setStatus("err");
