@@ -17,6 +17,9 @@ const t = {
     mediaLibrary: "Media Library",
     pages: "Pages",
     allPages: "All Pages",
+    courses: "Courses",
+    allCourses: "All Courses",
+    addNewCourse: "Add New Course",
     logout: "Log Out",
 
     // Dashboard
@@ -200,6 +203,9 @@ const t = {
     mediaLibrary: "مكتبة الوسائط",
     pages: "الصفحات",
     allPages: "كل الصفحات",
+    courses: "الكورسات",
+    allCourses: "كل الكورسات",
+    addNewCourse: "إضافة كورس جديد",
     logout: "تسجيل الخروج",
 
     // Dashboard

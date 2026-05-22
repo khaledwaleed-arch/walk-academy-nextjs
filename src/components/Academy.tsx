@@ -1,20 +1,25 @@
 "use client";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { AnimatedSection, StaggerGrid, StaggerItem } from "./AnimatedSection";
 import { useI18n } from "@/lib/i18n";
 
-const COURSES = [
-  { key: "c1", levelColor: "bg-green-500", slug: "accounting-fundamentals" },
-  { key: "c3", levelColor: "bg-blue-500",  slug: "odoo-erp-mastery" },
-];
-
-const PRICES: Record<string, string> = {
-  c1: "3,500 EGP",
-  c3: "5,000 EGP",
-};
+interface Course {
+  id: number; slug: string; price: string; level_color: string;
+  title_en: string; title_ar: string;
+  duration_en: string; duration_ar: string;
+}
 
 export default function Academy() {
   const { t, isRTL } = useI18n();
+  const [courses, setCourses] = useState<Course[]>([]);
+
+  useEffect(() => {
+    fetch("/api/courses").then(r => r.json()).then(data => {
+      if (Array.isArray(data)) setCourses(data);
+    }).catch(() => {});
+  }, []);
+
   return (
     <section id="academy" dir={isRTL ? "rtl" : "ltr"} className="py-24 bg-[#F5F5F5]">
       <div className="max-w-7xl mx-auto px-6">
@@ -27,18 +32,18 @@ export default function Academy() {
         </AnimatedSection>
 
         <StaggerGrid className="grid md:grid-cols-2 gap-6 mb-10">
-          {COURSES.map((c) => (
-            <StaggerItem key={c.key}>
+          {courses.map((c) => (
+            <StaggerItem key={c.id}>
               <div className="group bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
                 <div className="bg-gradient-to-br from-[#0D3B5C] to-[#1a5a8a] p-7 relative overflow-hidden">
                   <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
-                  <h3 className="text-white text-xl font-bold">{t(`academy.courses.${c.key}.title`)}</h3>
+                  <h3 className="text-white text-xl font-bold">{isRTL ? c.title_ar : c.title_en}</h3>
                 </div>
 
                 <div className="p-6">
                   <div className="flex items-center gap-5 mb-5 text-sm text-gray-400">
                     <span className="flex items-center gap-1.5">
-                      <i className="fas fa-clock text-[#F58220]" /> {t(`academy.courses.${c.key}.duration`)}
+                      <i className="fas fa-clock text-[#F58220]" /> {isRTL ? c.duration_ar : c.duration_en}
                     </span>
                     <span className="flex items-center gap-1.5">
                       <i className="fas fa-certificate text-[#F58220]" /> {t("common.certificate")}
@@ -49,7 +54,7 @@ export default function Academy() {
                   </div>
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="text-[#0D3B5C] font-black text-2xl">{PRICES[c.key]}</div>
+                      <div className="text-[#0D3B5C] font-black text-2xl">{c.price}</div>
                       <div className="text-gray-400 text-xs mt-0.5">Full program fee</div>
                     </div>
                     <div className="flex items-center gap-2">

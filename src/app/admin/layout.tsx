@@ -79,6 +79,18 @@ function NavItems({ t }: { t: (k: any) => string }) {
         { label: t("allPages"), href: "/admin/pages" },
       ],
     },
+    {
+      label: t("courses"),
+      icon: (
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+        </svg>
+      ),
+      children: [
+        { label: t("allCourses"), href: "/admin/courses" },
+        { label: t("addNewCourse"), href: "/admin/courses/new" },
+      ],
+    },
   ];
 }
 
@@ -206,11 +218,12 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
     }
     setChecking(false);
     // Auto-expand active section
-    const NAV_LABELS = ["posts", "media", "pages"] as const;
+    const NAV_LABELS = ["posts", "media", "pages", "courses"] as const;
     const CHILDREN_MAP: Record<string, string[]> = {
       posts: ["/admin/posts", "/admin/categories", "/admin/tags"],
       media: ["/admin/media"],
       pages: ["/admin/pages"],
+      courses: ["/admin/courses"],
     };
     NAV_LABELS.forEach(label => {
       if (CHILDREN_MAP[label].some(href => pathname.startsWith(href))) {
