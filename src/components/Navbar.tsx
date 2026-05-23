@@ -117,7 +117,7 @@ export default function Navbar() {
             href="#register"
             className="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 bg-[#F58220] text-white text-sm font-semibold rounded-full hover:bg-[#d9700f] hover:-translate-y-0.5 hover:shadow-lg hover:shadow-orange-500/30 transition-all duration-200"
           >
-            <i className="fas fa-rocket text-xs" />
+            <i className="fas fa-graduation-cap text-xs" />
             {t("nav.register")}
           </a>
 
@@ -187,7 +187,7 @@ export default function Navbar() {
                 onClick={() => setMenuOpen(false)}
                 className="mt-2 flex items-center justify-center gap-2 px-5 py-3 bg-[#F58220] text-white font-semibold rounded-full"
               >
-                <i className="fas fa-rocket text-xs" /> {t("nav.register")}
+                <i className="fas fa-graduation-cap text-xs" /> {t("nav.register")}
               </a>
             </div>
           </motion.div>

@@ -13,7 +13,7 @@ export const translations = {
       academy: "Academy",
       blog: "Blog",
       contact: "Contact",
-      register: "Get Started",
+      register: "Enroll Now",
     },
     hero: {
       badge: "Comprehensive Business Solutions",
@@ -217,7 +217,7 @@ export const translations = {
       academy: "الأكاديمية",
       blog: "المدونة",
       contact: "اتصل بنا",
-      register: "ابدأ الآن",
+      register: "سجّل الآن",
     },
     hero: {
       badge: "حلول أعمال متكاملة",

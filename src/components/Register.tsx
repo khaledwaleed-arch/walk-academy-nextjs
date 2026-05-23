@@ -89,35 +89,47 @@ export default function Register() {
 
             <div className="p-8">
               {status === "ok" ? (
-                <div className="flex flex-col items-center py-8 text-center gap-4">
+                <div className="flex flex-col items-center py-6 text-center gap-5">
                   <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center">
                     <i className="fas fa-check text-green-500 text-3xl" />
                   </div>
-                  <h3 className="text-2xl font-bold text-[#0D3B5C]">Registration Submitted!</h3>
-                  <p className="text-gray-500 max-w-sm text-sm">Our team will contact you within 24 hours to confirm your enrollment.</p>
+                  <div>
+                    <h3 className="text-2xl font-bold text-[#0D3B5C]">Registration Complete!</h3>
+                    <p className="text-gray-500 text-sm mt-1">Our team will contact you within 24 hours to confirm your enrollment.</p>
+                  </div>
+
                   {paymentMethod === "instapay" && (
-                    <div className="w-full bg-[#f5f0ff] border-2 border-[#3d1a6e]/30 rounded-2xl p-5 text-left">
-                      <p className="font-semibold text-[#3d1a6e] text-sm mb-3"><i className="fas fa-credit-card mr-2" />Pay via InstaPay</p>
-                      <p className="text-xs text-gray-500 mb-1">Send payment to:</p>
-                      <p className="font-bold text-[#3d1a6e]">khaledwaledd@instapay</p>
+                    <div className="w-full bg-[#f5f0ff] border-2 border-[#3d1a6e]/30 rounded-2xl p-5">
+                      <p className="font-bold text-[#3d1a6e] mb-3 flex items-center gap-2 justify-center">
+                        <i className="fas fa-credit-card" /> Send payment via InstaPay
+                      </p>
+                      <p className="font-bold text-[#3d1a6e] text-lg">khaledwaledd@instapay</p>
                       <a href="https://ipn.eg/S/khaledwaledd/instapay/6Lok2a" target="_blank" rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 mt-3 px-5 py-2 bg-[#3d1a6e] text-white text-sm font-semibold rounded-full hover:bg-[#2d1254] transition-colors">
-                        <i className="fas fa-external-link-alt text-xs" /> Open InstaPay Link
+                        className="inline-flex items-center gap-2 mt-3 px-6 py-2.5 bg-[#3d1a6e] text-white text-sm font-semibold rounded-full hover:bg-[#2d1254] transition-colors">
+                        <i className="fas fa-external-link-alt text-xs" /> Open InstaPay
                       </a>
                     </div>
                   )}
                   {paymentMethod === "wallet" && (
-                    <div className="w-full bg-[#fff5f5] border-2 border-[#C8102E]/30 rounded-2xl p-5 text-left">
-                      <p className="font-semibold text-[#C8102E] text-sm mb-3"><i className="fas fa-mobile-alt mr-2" />Pay via Mobile Wallet</p>
-                      <p className="text-xs text-gray-500 mb-1">Send payment to:</p>
-                      <p className="font-bold text-[#C8102E] text-xl tracking-widest">011 4370 6993</p>
+                    <div className="w-full bg-[#fff5f5] border-2 border-[#C8102E]/30 rounded-2xl p-5">
+                      <p className="font-bold text-[#C8102E] mb-3 flex items-center gap-2 justify-center">
+                        <i className="fas fa-mobile-alt" /> Send payment via Mobile Wallet
+                      </p>
+                      <p className="font-bold text-[#C8102E] text-2xl tracking-widest">011 4370 6993</p>
                       <p className="text-xs text-gray-400 mt-2">Keep your transfer receipt as proof of payment</p>
                     </div>
                   )}
-                  <button onClick={handleReset} className="mt-2 px-8 py-3 bg-[#F58220] text-white rounded-full font-semibold hover:bg-[#d9700f] transition-colors">Register Another</button>
+
+                  <button onClick={handleReset} className="w-full px-8 py-3 border-2 border-gray-200 text-gray-500 rounded-xl font-semibold hover:border-gray-300 hover:text-gray-700 transition-colors text-sm">
+                    Register Another Student
+                  </button>
                 </div>
               ) : (
                 <form className="space-y-5" onSubmit={handleSubmit}>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="flex items-center justify-center w-6 h-6 rounded-full bg-[#0D3B5C] text-white text-xs font-bold">1</span>
+                    <span className="text-sm font-bold text-[#0D3B5C]">Your Details</span>
+                  </div>
                   <div className="grid sm:grid-cols-2 gap-5">
                     <div>
                       <label className="block text-sm font-semibold text-[#0D3B5C] mb-2">{t("register.full_name")} *</label>
@@ -168,7 +180,13 @@ export default function Register() {
                   )}
 
                   {selected && (
-                    <PaymentMethodSelector value={paymentMethod} onChange={setPaymentMethod} />
+                    <div className="border-t-2 border-dashed border-gray-200 pt-5">
+                      <div className="flex items-center gap-2 mb-4">
+                        <span className="flex items-center justify-center w-6 h-6 rounded-full bg-[#F58220] text-white text-xs font-bold">2</span>
+                        <span className="text-sm font-bold text-[#0D3B5C]">Choose Payment Method</span>
+                      </div>
+                      <PaymentMethodSelector value={paymentMethod} onChange={setPaymentMethod} />
+                    </div>
                   )}
 
                   {status === "err" && (
@@ -178,8 +196,8 @@ export default function Register() {
                   <button type="submit" disabled={status === "sending"}
                     className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-[#F58220] text-white font-bold rounded-xl text-lg hover:bg-[#d9700f] hover:shadow-xl hover:shadow-orange-400/30 hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
                   >
-                    <i className={`fas ${status === "sending" ? "fa-spinner fa-spin" : "fa-paper-plane"}`} />
-                    {status === "sending" ? "Submitting..." : t("register.submit")}
+                    <i className={`fas ${status === "sending" ? "fa-spinner fa-spin" : "fa-lock"}`} />
+                    {status === "sending" ? "Submitting..." : "Complete Registration & Pay"}
                   </button>
                 </form>
               )}

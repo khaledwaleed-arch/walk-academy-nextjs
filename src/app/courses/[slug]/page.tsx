@@ -15,6 +15,12 @@ interface CourseRow {
   outcomes_en: string[]; outcomes_ar: string[];
   modules_en: Module[]; modules_ar: Module[];
   audience_en: string[]; audience_ar: string[];
+  instructor_name: string;
+  instructor_title_en: string; instructor_title_ar: string;
+  instructor_bio_en: string; instructor_bio_ar: string;
+  schedule_en: string; schedule_ar: string;
+  start_date_en: string; start_date_ar: string;
+  location_en: string; location_ar: string;
 }
 
 async function getCourse(slug: string): Promise<CourseRow | null> {
@@ -191,6 +197,75 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
                 </li>
               ))}
             </ul>
+          </div>
+        )}
+
+        {/* Instructor */}
+        {course.instructor_name && (
+          <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+            <h2 className="text-[#0D3B5C] font-bold text-xl mb-6 flex items-center gap-2">
+              <i className="fas fa-user-tie text-[#F58220]" /> Your Instructor
+            </h2>
+            <div className="flex items-start gap-5">
+              <div className="w-16 h-16 rounded-2xl bg-[#0D3B5C] flex items-center justify-center flex-shrink-0">
+                <i className="fas fa-user text-white text-2xl" />
+              </div>
+              <div className="flex-1">
+                <p className="font-bold text-[#0D3B5C] text-lg">{course.instructor_name}</p>
+                {course.instructor_title_en && (
+                  <p className="text-[#F58220] text-sm font-medium mt-0.5">{course.instructor_title_en}</p>
+                )}
+                {course.instructor_bio_en && (
+                  <p className="text-gray-600 text-sm mt-3 leading-relaxed">{course.instructor_bio_en}</p>
+                )}
+                {course.instructor_bio_ar && (
+                  <p className="text-gray-500 text-sm mt-3 leading-relaxed" dir="rtl">{course.instructor_bio_ar}</p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Schedule */}
+        {(course.start_date_en || course.schedule_en) && (
+          <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+            <h2 className="text-[#0D3B5C] font-bold text-xl mb-6 flex items-center gap-2">
+              <i className="fas fa-calendar-alt text-[#F58220]" /> Schedule & Timetable
+            </h2>
+            <div className="grid md:grid-cols-3 gap-4 mb-5">
+              {course.start_date_en && (
+                <div className="flex items-center gap-3 bg-[#F5F5F5] rounded-2xl px-5 py-4">
+                  <i className="fas fa-calendar-check text-[#F58220] text-xl" />
+                  <div>
+                    <div className="text-xs text-gray-400 font-medium">Start Date</div>
+                    <div className="text-[#0D3B5C] font-bold text-sm mt-0.5">{course.start_date_en}</div>
+                  </div>
+                </div>
+              )}
+              {course.duration_en && (
+                <div className="flex items-center gap-3 bg-[#F5F5F5] rounded-2xl px-5 py-4">
+                  <i className="fas fa-clock text-[#F58220] text-xl" />
+                  <div>
+                    <div className="text-xs text-gray-400 font-medium">Duration</div>
+                    <div className="text-[#0D3B5C] font-bold text-sm mt-0.5">{course.duration_en}</div>
+                  </div>
+                </div>
+              )}
+              {course.location_en && (
+                <div className="flex items-center gap-3 bg-[#F5F5F5] rounded-2xl px-5 py-4">
+                  <i className="fas fa-map-marker-alt text-[#F58220] text-xl" />
+                  <div>
+                    <div className="text-xs text-gray-400 font-medium">Location</div>
+                    <div className="text-[#0D3B5C] font-bold text-sm mt-0.5">{course.location_en}</div>
+                  </div>
+                </div>
+              )}
+            </div>
+            {course.schedule_en && (
+              <div className="bg-[#F5F5F5] rounded-2xl p-5">
+                <pre className="text-sm text-gray-700 whitespace-pre-wrap font-sans leading-relaxed">{course.schedule_en}</pre>
+              </div>
+            )}
           </div>
         )}
 

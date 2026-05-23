@@ -7,6 +7,7 @@ import { LanguageProvider, useLanguage } from "@/contexts/LanguageContext";
 function NavItems({ t }: { t: (k: any) => string }) {
   return [
     {
+      key: "dashboard",
       label: t("dashboard"),
       href: "/admin",
       icon: (
@@ -44,6 +45,7 @@ function NavItems({ t }: { t: (k: any) => string }) {
     },
     { type: "separator" as const },
     {
+      key: "posts",
       label: t("posts"),
       icon: (
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -58,6 +60,7 @@ function NavItems({ t }: { t: (k: any) => string }) {
       ],
     },
     {
+      key: "media",
       label: t("media"),
       icon: (
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -69,6 +72,7 @@ function NavItems({ t }: { t: (k: any) => string }) {
       ],
     },
     {
+      key: "pages",
       label: t("pages"),
       icon: (
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -80,6 +84,7 @@ function NavItems({ t }: { t: (k: any) => string }) {
       ],
     },
     {
+      key: "courses",
       label: t("courses"),
       icon: (
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -97,6 +102,15 @@ function NavItems({ t }: { t: (k: any) => string }) {
       icon: (
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" />
+        </svg>
+      ),
+    },
+    {
+      label: t("services"),
+      href: "/admin/services",
+      icon: (
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
         </svg>
       ),
     },
@@ -124,11 +138,12 @@ function SidebarContent({
             return <div key={i} className="my-2 border-t border-[#3c434a]" />;
           }
           if ("children" in item && item.children) {
-            const isOpen = open.includes(item.label);
+            const itemId = ("key" in item && item.key) ? item.key : item.label;
+            const isOpen = open.includes(itemId);
             const childActive = item.children.some((c) => isActive(c.href));
             return (
-              <div key={item.label}>
-                <button onClick={() => toggle(item.label)}
+              <div key={itemId}>
+                <button onClick={() => toggle(itemId)}
                   className={`w-full flex items-center gap-2 px-3 py-2 text-sm transition-colors
                     ${childActive ? "text-white bg-[#2c3338]" : "text-[#a7aaad] hover:text-white hover:bg-[#2c3338]"}`}>
                   <span className="flex-shrink-0">{item.icon}</span>
@@ -226,17 +241,20 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
       setToken(t2);
     }
     setChecking(false);
-    // Auto-expand active section
-    const NAV_LABELS = ["posts", "media", "pages", "courses"] as const;
+    // Auto-expand active section — use translated labels since open state stores them
+    // We expand by checking pathname against known child paths
     const CHILDREN_MAP: Record<string, string[]> = {
       posts: ["/admin/posts", "/admin/categories", "/admin/tags"],
       media: ["/admin/media"],
       pages: ["/admin/pages"],
       courses: ["/admin/courses"],
     };
-    NAV_LABELS.forEach(label => {
-      if (CHILDREN_MAP[label].some(href => pathname.startsWith(href))) {
-        setOpen(o => o.includes(label) ? o : [...o, label]);
+    Object.entries(CHILDREN_MAP).forEach(([_key, hrefs]) => {
+      if (hrefs.some(href => pathname.startsWith(href))) {
+        // We need the translated label — get it from t() but that hook isn't available here.
+        // Instead, expand ALL groups and let isOpen filter naturally.
+        // Simple fix: store open by raw key, not translated label.
+        setOpen(o => o.includes(_key) ? o : [...o, _key]);
       }
     });
   }, [pathname]);

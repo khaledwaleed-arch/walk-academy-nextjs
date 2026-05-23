@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyAdmin } from "@/lib/adminAuth";
 import { getPool } from "@/lib/db";
+import { SECTION_FIELDS } from "@/lib/sectionFields";
 
 const pool = getPool();
 
@@ -13,15 +14,20 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ key:
   const { rows: sectionRows } = await pool.query("SELECT * FROM sections WHERE key=$1", [key]);
   const section = sectionRows[0] || null;
 
-  // Get i18n overrides for this section prefix
-  const { rows } = await pool.query(
-    "SELECT lang, key, value FROM content_overrides WHERE key LIKE $1",
-    [`${key}.%`]
-  );
+  // Build the exact list of keys for this section to avoid prefix-mismatch bugs
+  // (e.g. "whyus" section uses "why.*" keys; "hero" section includes "hero_badges.*")
+  const fieldKeys = (SECTION_FIELDS[key] || []).map((f) => f.key);
+
   const overrides: Record<string, Record<string, string>> = {};
-  for (const row of rows) {
-    if (!overrides[row.lang]) overrides[row.lang] = {};
-    overrides[row.lang][row.key] = row.value;
+  if (fieldKeys.length > 0) {
+    const { rows } = await pool.query(
+      "SELECT lang, key, value FROM content_overrides WHERE key = ANY($1::text[])",
+      [fieldKeys]
+    );
+    for (const row of rows) {
+      if (!overrides[row.lang]) overrides[row.lang] = {};
+      overrides[row.lang][row.key] = row.value;
+    }
   }
 
   return NextResponse.json({ section, overrides });

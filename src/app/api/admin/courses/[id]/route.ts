@@ -21,6 +21,10 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     title_en, title_ar, duration_en, duration_ar, tagline_en, tagline_ar,
     description_en, description_ar,
     outcomes_en, outcomes_ar, modules_en, modules_ar, audience_en, audience_ar,
+    instructor_name, instructor_title_en, instructor_title_ar,
+    instructor_bio_en, instructor_bio_ar,
+    schedule_en, schedule_ar, start_date_en, start_date_ar,
+    location_en, location_ar,
   } = body;
 
   const { rows } = await pool.query(
@@ -29,14 +33,23 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       title_en=$6, title_ar=$7, duration_en=$8, duration_ar=$9,
       tagline_en=$10, tagline_ar=$11, description_en=$12, description_ar=$13,
       outcomes_en=$14, outcomes_ar=$15, modules_en=$16, modules_ar=$17,
-      audience_en=$18, audience_ar=$19, updated_at=NOW()
-     WHERE id=$20 RETURNING *`,
+      audience_en=$18, audience_ar=$19,
+      instructor_name=$20, instructor_title_en=$21, instructor_title_ar=$22,
+      instructor_bio_en=$23, instructor_bio_ar=$24,
+      schedule_en=$25, schedule_ar=$26, start_date_en=$27, start_date_ar=$28,
+      location_en=$29, location_ar=$30,
+      updated_at=NOW()
+     WHERE id=$31 RETURNING *`,
     [slug, status, price, level_color, sort_order,
      title_en, title_ar, duration_en, duration_ar,
      tagline_en, tagline_ar, description_en, description_ar,
      JSON.stringify(outcomes_en), JSON.stringify(outcomes_ar),
      JSON.stringify(modules_en), JSON.stringify(modules_ar),
      JSON.stringify(audience_en), JSON.stringify(audience_ar),
+     instructor_name, instructor_title_en, instructor_title_ar,
+     instructor_bio_en, instructor_bio_ar,
+     schedule_en, schedule_ar, start_date_en, start_date_ar,
+     location_en, location_ar,
      id]
   );
   if (!rows[0]) return NextResponse.json({ error: "Not found" }, { status: 404 });

@@ -21,6 +21,7 @@ const t = {
     allCourses: "All Courses",
     addNewCourse: "Add New Course",
     sections: "Sections",
+    services: "Services",
     logout: "Log Out",
 
     // Dashboard
@@ -208,6 +209,7 @@ const t = {
     allCourses: "كل الكورسات",
     addNewCourse: "إضافة كورس جديد",
     sections: "أقسام الصفحة",
+    services: "الخدمات",
     logout: "تسجيل الخروج",
 
     // Dashboard

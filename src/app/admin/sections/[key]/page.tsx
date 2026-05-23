@@ -119,7 +119,7 @@ export default function SectionEditorPage({ params }: { params: Promise<{ key: s
         <div className="flex-1">
           <h1 className="text-xl font-bold text-[#1d2327]">Edit: {section?.label}</h1>
           <p className="text-sm text-gray-500 mt-0.5">
-            {isCustom ? "Custom section — edit title and HTML content" : `${fields.length} editable fields · Leave blank to use default`}
+            {isCustom ? "Custom section — edit title and HTML content" : `${fields.length} editable fields · Default text is pre-filled — edit any field and save`}
           </p>
         </div>
         <button
@@ -195,7 +195,7 @@ export default function SectionEditorPage({ params }: { params: Promise<{ key: s
               </button>
             ))}
             <div className="flex-1 flex items-center px-4">
-              <span className="text-xs text-gray-400">Leave a field blank to use the default text</span>
+              <span className="text-xs text-gray-400">Fields show current defaults · click Reset to revert any change</span>
             </div>
           </div>
 
