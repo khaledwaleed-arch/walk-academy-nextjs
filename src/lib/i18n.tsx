@@ -4,7 +4,7 @@ import { createContext, useContext, useState, useEffect, ReactNode } from "react
 
 export type Lang = "en" | "ar" | "fr";
 
-const translations = {
+export const translations = {
   en: {
     nav: {
       home: "Home",
@@ -615,10 +615,16 @@ const I18nContext = createContext<{
 
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Lang>("en");
+  const [overrides, setOverrides] = useState<Record<string, Record<string, string>>>({});
 
   useEffect(() => {
     const saved = (localStorage.getItem("walk_lang") as Lang) || "en";
     if (saved !== lang) setLangState(saved);
+    // Load content overrides from DB once
+    fetch("/api/content-overrides")
+      .then((r) => r.json())
+      .then((data) => setOverrides(data))
+      .catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -637,6 +643,9 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   }
 
   function t(key: string): string {
+    // Check DB override first
+    if (overrides[lang]?.[key] !== undefined) return overrides[lang][key];
+    // Fallback to static translations
     const keys = key.split(".");
     return getNestedValue(translations[lang] as unknown as Record<string, unknown>, keys);
   }

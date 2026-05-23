@@ -1,24 +1,41 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AnimatedSection } from "./AnimatedSection";
 import { useI18n } from "@/lib/i18n";
+import PaymentMethodSelector, { type PaymentMethod } from "./PaymentMethodSelector";
 
-const COURSES = [
-  { value: "c1", label: "Accounting Fundamentals",    price: "2,999 EGP" },
-  { value: "c2", label: "Advanced Financial Analysis", price: "4,999 EGP" },
-  { value: "c3", label: "Odoo ERP Mastery",            price: "5,999 EGP" },
-  { value: "c4", label: "Tax & Compliance",            price: "3,499 EGP" },
-];
+interface CourseOption {
+  value: string;
+  label: string;
+  price: string;
+}
 
 const COUNTRIES = ["Egypt","Morocco","Algeria","Tunisia","UAE","Saudi Arabia","Kuwait","France","Other"];
 
 type Status = "idle" | "sending" | "ok" | "err";
 
 export default function Register() {
-  const { t, isRTL } = useI18n();
+  const { t, isRTL, lang } = useI18n();
   const [selected, setSelected] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("");
   const [status, setStatus] = useState<Status>("idle");
-  const selectedCourse = COURSES.find((c) => c.value === selected);
+  const [courses, setCourses] = useState<CourseOption[]>([]);
+
+  useEffect(() => {
+    fetch("/api/courses")
+      .then((r) => r.json())
+      .then((rows) => {
+        setCourses(
+          rows.map((c: { id: number; slug: string; title_en: string; title_ar: string; price: string }) => ({
+            value: c.slug,
+            label: lang === "ar" && c.title_ar ? c.title_ar : c.title_en,
+            price: c.price ?? "",
+          }))
+        );
+      })
+      .catch(() => {});
+  }, [lang]);
+  const selectedCourse = courses.find((c) => c.value === selected);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -38,6 +55,12 @@ export default function Register() {
     } catch {
       setStatus("err");
     }
+  }
+
+  function handleReset() {
+    setStatus("idle");
+    setSelected("");
+    setPaymentMethod("");
   }
 
   return (
@@ -66,13 +89,32 @@ export default function Register() {
 
             <div className="p-8">
               {status === "ok" ? (
-                <div className="flex flex-col items-center py-12 text-center gap-4">
+                <div className="flex flex-col items-center py-8 text-center gap-4">
                   <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center">
                     <i className="fas fa-check text-green-500 text-3xl" />
                   </div>
                   <h3 className="text-2xl font-bold text-[#0D3B5C]">Registration Submitted!</h3>
-                  <p className="text-gray-500 max-w-sm">Our team will contact you within 24 hours to confirm your enrollment.</p>
-                  <button onClick={() => { setStatus("idle"); setSelected(""); }} className="mt-2 px-8 py-3 bg-[#F58220] text-white rounded-full font-semibold">Register Another</button>
+                  <p className="text-gray-500 max-w-sm text-sm">Our team will contact you within 24 hours to confirm your enrollment.</p>
+                  {paymentMethod === "instapay" && (
+                    <div className="w-full bg-[#f5f0ff] border-2 border-[#3d1a6e]/30 rounded-2xl p-5 text-left">
+                      <p className="font-semibold text-[#3d1a6e] text-sm mb-3"><i className="fas fa-credit-card mr-2" />Pay via InstaPay</p>
+                      <p className="text-xs text-gray-500 mb-1">Send payment to:</p>
+                      <p className="font-bold text-[#3d1a6e]">khaledwaledd@instapay</p>
+                      <a href="https://ipn.eg/S/khaledwaledd/instapay/6Lok2a" target="_blank" rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 mt-3 px-5 py-2 bg-[#3d1a6e] text-white text-sm font-semibold rounded-full hover:bg-[#2d1254] transition-colors">
+                        <i className="fas fa-external-link-alt text-xs" /> Open InstaPay Link
+                      </a>
+                    </div>
+                  )}
+                  {paymentMethod === "wallet" && (
+                    <div className="w-full bg-[#fff5f5] border-2 border-[#C8102E]/30 rounded-2xl p-5 text-left">
+                      <p className="font-semibold text-[#C8102E] text-sm mb-3"><i className="fas fa-mobile-alt mr-2" />Pay via Mobile Wallet</p>
+                      <p className="text-xs text-gray-500 mb-1">Send payment to:</p>
+                      <p className="font-bold text-[#C8102E] text-xl tracking-widest">011 4370 6993</p>
+                      <p className="text-xs text-gray-400 mt-2">Keep your transfer receipt as proof of payment</p>
+                    </div>
+                  )}
+                  <button onClick={handleReset} className="mt-2 px-8 py-3 bg-[#F58220] text-white rounded-full font-semibold hover:bg-[#d9700f] transition-colors">Register Another</button>
                 </div>
               ) : (
                 <form className="space-y-5" onSubmit={handleSubmit}>
@@ -109,8 +151,8 @@ export default function Register() {
                     <select name="course" required value={selected} onChange={(e) => setSelected(e.target.value)}
                       className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-sm focus:border-[#0D3B5C] focus:outline-none bg-gray-50 focus:bg-white transition-all appearance-none">
                       <option value="">-- Choose a Course --</option>
-                      {COURSES.map((c) => (
-                        <option key={c.value} value={c.value}>{c.label} — {c.price}</option>
+                      {courses.map((c) => (
+                        <option key={c.value} value={c.value}>{c.label}{c.price ? ` — ${c.price}` : ""}</option>
                       ))}
                     </select>
                   </div>
@@ -125,12 +167,9 @@ export default function Register() {
                     </div>
                   )}
 
-                  <div className="flex items-center gap-3 bg-gray-50 rounded-2xl p-4 border border-gray-200">
-                    <i className="fas fa-info-circle text-[#0D3B5C]" />
-                    <p className="text-gray-500 text-xs">
-                      After submitting, our team will contact you within 24 hours to confirm your enrollment and discuss payment options.
-                    </p>
-                  </div>
+                  {selected && (
+                    <PaymentMethodSelector value={paymentMethod} onChange={setPaymentMethod} />
+                  )}
 
                   {status === "err" && (
                     <p className="text-red-500 text-sm text-center">Something went wrong. Please try again.</p>

@@ -32,7 +32,7 @@ export default function Academy() {
         </AnimatedSection>
 
         <StaggerGrid className="grid md:grid-cols-2 gap-6 mb-10">
-          {courses.map((c) => (
+          {courses.slice(0, 4).map((c) => (
             <StaggerItem key={c.id}>
               <div className="group bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
                 <div className="bg-gradient-to-br from-[#0D3B5C] to-[#1a5a8a] p-7 relative overflow-hidden">
@@ -78,14 +78,16 @@ export default function Academy() {
           ))}
         </StaggerGrid>
 
-        <AnimatedSection className="text-center">
-          <a
-            href="#contact"
-            className="inline-flex items-center gap-2 px-8 py-4 border-2 border-[#0D3B5C] text-[#0D3B5C] font-bold rounded-full hover:bg-[#0D3B5C] hover:text-white transition-all duration-300"
-          >
-            {t("academy.cta")} <i className="fas fa-arrow-right" />
-          </a>
-        </AnimatedSection>
+        {courses.length > 4 && (
+          <AnimatedSection className="text-center">
+            <Link
+              href="/courses"
+              className="inline-flex items-center gap-2 px-8 py-4 border-2 border-[#0D3B5C] text-[#0D3B5C] font-bold rounded-full hover:bg-[#0D3B5C] hover:text-white transition-all duration-300"
+            >
+              {t("academy.cta")} <i className="fas fa-arrow-right" />
+            </Link>
+          </AnimatedSection>
+        )}
       </div>
     </section>
   );

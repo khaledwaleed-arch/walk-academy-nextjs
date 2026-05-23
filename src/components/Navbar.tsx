@@ -58,13 +58,13 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
         {/* Logo */}
         <a href="#home" className="flex items-center gap-2 group shrink-0">
-          <div className="relative h-11 flex items-center">
+          <div className="relative h-14 flex items-center">
             <Image
               src="/logo.png"
               alt="Walk Business"
-              width={150}
-              height={44}
-              className="h-11 w-auto object-contain brightness-0 invert"
+              width={188}
+              height={55}
+              className="h-14 w-auto object-contain brightness-0 invert"
               priority
             />
           </div>

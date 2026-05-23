@@ -1,3 +1,4 @@
+import { getPool } from "@/lib/db";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import StatsBar from "@/components/StatsBar";
@@ -14,29 +15,65 @@ import FAQ from "@/components/FAQ";
 import CTABanner from "@/components/CTABanner";
 import Contact from "@/components/Contact";
 import Register from "@/components/Register";
+import CustomSection from "@/components/CustomSection";
 import Footer from "@/components/Footer";
 import FloatingButtons from "@/components/FloatingButtons";
 
-export default function Home() {
+const SECTION_MAP: Record<string, React.ComponentType> = {
+  hero:         Hero,
+  stats:        StatsBar,
+  problem:      Problem,
+  services:     Services,
+  about:        About,
+  academy:      Academy,
+  odoo:         OdooModules,
+  whyus:        WhyUs,
+  testimonials: Testimonials,
+  blog:         Blog,
+  youtube:      YouTubeFeed,
+  faq:          FAQ,
+  cta:          CTABanner,
+  contact:      Contact,
+  register:     Register,
+};
+
+export const revalidate = 60;
+
+interface SectionRow {
+  key: string;
+  type: string;
+  is_visible: boolean;
+  sort_order: number;
+  content: Record<string, string>;
+}
+
+export default async function Home() {
+  let sectionConfig: SectionRow[] = [];
+  try {
+    const pool = getPool();
+    const { rows } = await pool.query(
+      "SELECT key, type, is_visible, sort_order, content FROM sections ORDER BY sort_order"
+    );
+    sectionConfig = rows;
+  } catch {
+    sectionConfig = Object.keys(SECTION_MAP).map((key, i) => ({
+      key, type: "built-in", is_visible: true, sort_order: i + 1, content: {},
+    }));
+  }
+
+  const visibleSections = sectionConfig.filter((s) => s.is_visible);
+
   return (
     <>
       <Navbar />
       <main>
-        <Hero />
-        <StatsBar />
-        <Problem />
-        <Services />
-        <About />
-        <Academy />
-        <OdooModules />
-        <WhyUs />
-        <Testimonials />
-        <Blog />
-        <YouTubeFeed />
-        <FAQ />
-        <CTABanner />
-        <Contact />
-        <Register />
+        {visibleSections.map((s) => {
+          if (s.type === "custom") {
+            return <CustomSection key={s.key} content={s.content || {}} />;
+          }
+          const Component = SECTION_MAP[s.key];
+          return Component ? <Component key={s.key} /> : null;
+        })}
       </main>
       <Footer />
       <FloatingButtons />

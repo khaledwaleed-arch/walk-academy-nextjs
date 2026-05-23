@@ -20,6 +20,7 @@ const t = {
     courses: "Courses",
     allCourses: "All Courses",
     addNewCourse: "Add New Course",
+    sections: "Sections",
     logout: "Log Out",
 
     // Dashboard
@@ -206,6 +207,7 @@ const t = {
     courses: "الكورسات",
     allCourses: "كل الكورسات",
     addNewCourse: "إضافة كورس جديد",
+    sections: "أقسام الصفحة",
     logout: "تسجيل الخروج",
 
     // Dashboard
