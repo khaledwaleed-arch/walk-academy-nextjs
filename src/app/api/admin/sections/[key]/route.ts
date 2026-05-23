@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { verifyAdmin } from "@/lib/adminAuth";
 import { getPool } from "@/lib/db";
 import { SECTION_FIELDS } from "@/lib/sectionFields";
@@ -70,6 +71,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ key:
     await pool.query(`UPDATE sections SET ${updates.join(",")} WHERE key=$${i}`, vals);
   }
 
+  revalidatePath("/");
   return NextResponse.json({ ok: true });
 }
 

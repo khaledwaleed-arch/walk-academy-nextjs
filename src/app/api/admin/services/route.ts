@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { verifyAdmin } from "@/lib/adminAuth";
 import { getPool } from "@/lib/db";
 
@@ -21,5 +22,6 @@ export async function POST(req: NextRequest) {
      VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *`,
     [slug, icon, title_en || "", title_ar || "", desc_en || "", desc_ar || "", sort_order]
   );
+  revalidatePath("/");
   return NextResponse.json(rows[0], { status: 201 });
 }

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { verifyAdmin } from "@/lib/adminAuth";
 import { getPool } from "@/lib/db";
 
@@ -53,6 +54,9 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
      id]
   );
   if (!rows[0]) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  revalidatePath(`/courses/${rows[0].slug}`);
+  revalidatePath("/courses");
+  revalidatePath("/");
   return NextResponse.json(rows[0]);
 }
 

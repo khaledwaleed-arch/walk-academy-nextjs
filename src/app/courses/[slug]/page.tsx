@@ -33,10 +33,7 @@ async function getAllPublished(): Promise<CourseRow[]> {
   return rows;
 }
 
-export async function generateStaticParams() {
-  const courses = await getAllPublished();
-  return courses.map((c) => ({ slug: c.slug }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;

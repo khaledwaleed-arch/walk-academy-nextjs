@@ -3,7 +3,7 @@ import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import StatsBar from "@/components/StatsBar";
 import Problem from "@/components/Problem";
-import Services from "@/components/Services";
+import Services, { ServiceItem } from "@/components/Services";
 import About from "@/components/About";
 import Academy from "@/components/Academy";
 import OdooModules from "@/components/OdooModules";
@@ -48,9 +48,10 @@ interface SectionRow {
 }
 
 export default async function Home() {
+  const pool = getPool();
+
   let sectionConfig: SectionRow[] = [];
   try {
-    const pool = getPool();
     const { rows } = await pool.query(
       "SELECT key, type, is_visible, sort_order, content FROM sections ORDER BY sort_order"
     );
@@ -61,6 +62,14 @@ export default async function Home() {
     }));
   }
 
+  let services: ServiceItem[] = [];
+  try {
+    const { rows } = await pool.query(
+      "SELECT id, slug, icon, title_en, title_ar, desc_en, desc_ar, sort_order FROM services WHERE visible=TRUE ORDER BY sort_order, id"
+    );
+    services = rows;
+  } catch { /* services stays empty */ }
+
   const visibleSections = sectionConfig.filter((s) => s.is_visible);
 
   return (
@@ -70,6 +79,9 @@ export default async function Home() {
         {visibleSections.map((s) => {
           if (s.type === "custom") {
             return <CustomSection key={s.key} content={s.content || {}} />;
+          }
+          if (s.key === "services") {
+            return <Services key={s.key} initialServices={services} />;
           }
           const Component = SECTION_MAP[s.key];
           return Component ? <Component key={s.key} /> : null;

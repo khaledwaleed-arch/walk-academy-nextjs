@@ -1,9 +1,8 @@
 "use client";
-import { useState, useEffect } from "react";
 import { AnimatedSection, StaggerGrid, StaggerItem } from "./AnimatedSection";
 import { useI18n } from "@/lib/i18n";
 
-interface ServiceItem {
+export interface ServiceItem {
   id: number;
   icon: string;
   title_en: string;
@@ -12,16 +11,9 @@ interface ServiceItem {
   desc_ar: string;
 }
 
-export default function Services() {
+export default function Services({ initialServices = [] }: { initialServices?: ServiceItem[] }) {
   const { t, isRTL } = useI18n();
-  const [services, setServices] = useState<ServiceItem[]>([]);
-
-  useEffect(() => {
-    fetch("/api/services")
-      .then(r => r.json())
-      .then(data => { if (Array.isArray(data)) setServices(data); })
-      .catch(() => {});
-  }, []);
+  const services = initialServices;
 
   return (
     <section id="services" dir={isRTL ? "rtl" : "ltr"} className="py-24 bg-[#F5F5F5]">
