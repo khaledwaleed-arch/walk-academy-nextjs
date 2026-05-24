@@ -1,3 +1,10 @@
 #!/bin/bash
+set -e
 cd /root/walk-academy-nextjs
-npm run build && pm2 restart walk-academy
+echo "Building..."
+npm run build
+echo "Restarting walk-academy service..."
+systemctl restart walk-academy
+sleep 3
+systemctl status walk-academy --no-pager
+echo "Deploy complete."

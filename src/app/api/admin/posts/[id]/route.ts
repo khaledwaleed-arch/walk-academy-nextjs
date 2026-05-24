@@ -1,9 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyAdmin } from "@/lib/adminAuth";
 import { getPool } from "@/lib/db";
+import { handleDbError } from "@/lib/error-handler";
+import { buildUpdateQuery, AllowedFields } from "@/lib/db-helpers";
 
 const pool = getPool();
 function auth(req: NextRequest) { return verifyAdmin(req); }
+
+const POST_FIELDS: AllowedFields = {
+  title: 'text', slug: 'text', content: 'text', excerpt: 'text', status: 'text',
+  featured_image_url: 'text', meta_title: 'text', meta_description: 'text',
+  author_name: 'text', visibility: 'text', password: 'text',
+};
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   if (!auth(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -27,7 +35,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   const { id } = await params;
   const body = await req.json();
 
-  // Restore from trash
+  // Restore from trash action
   if (body.action === "restore") {
     const { rows } = await pool.query(
       "UPDATE posts SET deleted_at=NULL, updated_at=NOW() WHERE id=$1 RETURNING *", [id]
@@ -35,6 +43,23 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     return NextResponse.json(rows[0]);
   }
 
+  // Check for partial update — if only some fields present, use buildUpdateQuery
+  const hasAllCoreFields = body.title !== undefined && body.content !== undefined;
+
+  if (!hasAllCoreFields) {
+    // Partial update
+    const query = buildUpdateQuery('posts', parseInt(id), body, POST_FIELDS);
+    if (!query) return NextResponse.json({ error: 'No valid fields to update' }, { status: 400 });
+    try {
+      const { rows } = await pool.query(query.text, query.values);
+      if (!rows[0]) return NextResponse.json({ error: "Not found" }, { status: 404 });
+      return NextResponse.json(rows[0]);
+    } catch (err) {
+      return handleDbError(err);
+    }
+  }
+
+  // Full update
   const { title, slug, content, excerpt, status, featured_image_url, meta_title, meta_description,
     author_name, category_ids, tag_ids, scheduled_at, visibility, password } = body;
 
@@ -45,29 +70,33 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   if (status === "published" && existing.rows[0].status !== "published") published_at = new Date();
   if (status === "draft") published_at = null;
 
-  const { rows } = await pool.query(
-    `UPDATE posts SET title=$1, slug=$2, content=$3, excerpt=$4, status=$5, featured_image_url=$6,
-     meta_title=$7, meta_description=$8, author_name=$9, published_at=$10, scheduled_at=$11,
-     visibility=$12, password=$13, updated_at=NOW()
-     WHERE id=$14 RETURNING *`,
-    [title, slug, content, excerpt, status, featured_image_url || "",
-     meta_title || "", meta_description || "", author_name || "Walk Academy",
-     published_at, scheduled_at || null, visibility || "public", password || "", id]
-  );
+  try {
+    const { rows } = await pool.query(
+      `UPDATE posts SET title=$1, slug=$2, content=$3, excerpt=$4, status=$5, featured_image_url=$6,
+       meta_title=$7, meta_description=$8, author_name=$9, published_at=$10, scheduled_at=$11,
+       visibility=$12, password=$13, updated_at=NOW()
+       WHERE id=$14 RETURNING *`,
+      [title, slug, content, excerpt, status, featured_image_url || "",
+       meta_title || "", meta_description || "", author_name || "Walk Academy",
+       published_at, scheduled_at || null, visibility || "public", password || "", id]
+    );
 
-  await pool.query("DELETE FROM post_categories WHERE post_id=$1", [id]);
-  if (category_ids?.length) {
-    for (const cid of category_ids) {
-      await pool.query("INSERT INTO post_categories (post_id, category_id) VALUES ($1,$2) ON CONFLICT DO NOTHING", [id, cid]);
+    await pool.query("DELETE FROM post_categories WHERE post_id=$1", [id]);
+    if (category_ids?.length) {
+      for (const cid of category_ids) {
+        await pool.query("INSERT INTO post_categories (post_id, category_id) VALUES ($1,$2) ON CONFLICT DO NOTHING", [id, cid]);
+      }
     }
-  }
-  await pool.query("DELETE FROM post_tags WHERE post_id=$1", [id]);
-  if (tag_ids?.length) {
-    for (const tid of tag_ids) {
-      await pool.query("INSERT INTO post_tags (post_id, tag_id) VALUES ($1,$2) ON CONFLICT DO NOTHING", [id, tid]);
+    await pool.query("DELETE FROM post_tags WHERE post_id=$1", [id]);
+    if (tag_ids?.length) {
+      for (const tid of tag_ids) {
+        await pool.query("INSERT INTO post_tags (post_id, tag_id) VALUES ($1,$2) ON CONFLICT DO NOTHING", [id, tid]);
+      }
     }
+    return NextResponse.json(rows[0]);
+  } catch (err) {
+    return handleDbError(err);
   }
-  return NextResponse.json(rows[0]);
 }
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -95,18 +124,20 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   const { id } = await params;
   const { searchParams } = new URL(req.url);
 
-  if (searchParams.get("force") === "true") {
-    // Permanent delete
-    await pool.query("DELETE FROM posts WHERE id=$1", [id]);
+  try {
+    if (searchParams.get("force") === "true") {
+      await pool.query("DELETE FROM posts WHERE id=$1", [id]);
+      return NextResponse.json({ success: true });
+    }
+    // Soft delete (move to trash)
+    const existing = await pool.query("SELECT deleted_at FROM posts WHERE id=$1", [id]);
+    if (existing.rows[0]?.deleted_at) {
+      await pool.query("DELETE FROM posts WHERE id=$1", [id]);
+    } else {
+      await pool.query("UPDATE posts SET deleted_at=NOW(), updated_at=NOW() WHERE id=$1", [id]);
+    }
     return NextResponse.json({ success: true });
+  } catch (err) {
+    return handleDbError(err);
   }
-  // Soft delete (move to trash)
-  const existing = await pool.query("SELECT deleted_at FROM posts WHERE id=$1", [id]);
-  if (existing.rows[0]?.deleted_at) {
-    // Already in trash → permanent delete
-    await pool.query("DELETE FROM posts WHERE id=$1", [id]);
-  } else {
-    await pool.query("UPDATE posts SET deleted_at=NOW(), updated_at=NOW() WHERE id=$1", [id]);
-  }
-  return NextResponse.json({ success: true });
 }

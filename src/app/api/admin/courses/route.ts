@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyAdmin } from "@/lib/adminAuth";
 import { getPool } from "@/lib/db";
+import { handleDbError } from "@/lib/error-handler";
 
 const pool = getPool();
 
@@ -47,27 +48,32 @@ export async function POST(req: NextRequest) {
     location_en = "In Person — Cairo", location_ar = "حضوري — القاهرة",
   } = body;
 
-  if (!slug) return NextResponse.json({ error: "slug is required" }, { status: 400 });
+  const cleanSlug = (slug || '').trim().toLowerCase();
+  if (!cleanSlug) return NextResponse.json({ error: "slug is required" }, { status: 400 });
 
-  const { rows } = await pool.query(
-    `INSERT INTO courses
-      (slug, status, price, level_color, sort_order, title_en, title_ar, duration_en, duration_ar,
+  try {
+    const { rows } = await pool.query(
+      `INSERT INTO courses
+        (slug, status, price, level_color, sort_order, title_en, title_ar, duration_en, duration_ar,
+         tagline_en, tagline_ar, description_en, description_ar,
+         outcomes_en, outcomes_ar, modules_en, modules_ar, audience_en, audience_ar,
+         instructor_name, instructor_title_en, instructor_title_ar,
+         instructor_bio_en, instructor_bio_ar,
+         schedule_en, schedule_ar, start_date_en, start_date_ar, location_en, location_ar)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,
+               $20,$21,$22,$23,$24,$25,$26,$27,$28,$29,$30)
+       RETURNING *`,
+      [cleanSlug, status, price, level_color, sort_order, title_en, title_ar, duration_en, duration_ar,
        tagline_en, tagline_ar, description_en, description_ar,
-       outcomes_en, outcomes_ar, modules_en, modules_ar, audience_en, audience_ar,
+       JSON.stringify(outcomes_en), JSON.stringify(outcomes_ar),
+       JSON.stringify(modules_en), JSON.stringify(modules_ar),
+       JSON.stringify(audience_en), JSON.stringify(audience_ar),
        instructor_name, instructor_title_en, instructor_title_ar,
        instructor_bio_en, instructor_bio_ar,
-       schedule_en, schedule_ar, start_date_en, start_date_ar, location_en, location_ar)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,
-             $20,$21,$22,$23,$24,$25,$26,$27,$28,$29,$30)
-     RETURNING *`,
-    [slug, status, price, level_color, sort_order, title_en, title_ar, duration_en, duration_ar,
-     tagline_en, tagline_ar, description_en, description_ar,
-     JSON.stringify(outcomes_en), JSON.stringify(outcomes_ar),
-     JSON.stringify(modules_en), JSON.stringify(modules_ar),
-     JSON.stringify(audience_en), JSON.stringify(audience_ar),
-     instructor_name, instructor_title_en, instructor_title_ar,
-     instructor_bio_en, instructor_bio_ar,
-     schedule_en, schedule_ar, start_date_en, start_date_ar, location_en, location_ar]
-  );
-  return NextResponse.json(rows[0], { status: 201 });
+       schedule_en, schedule_ar, start_date_en, start_date_ar, location_en, location_ar]
+    );
+    return NextResponse.json(rows[0], { status: 201 });
+  } catch (err) {
+    return handleDbError(err);
+  }
 }

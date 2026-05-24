@@ -4,12 +4,25 @@ import { verifyAdmin } from "@/lib/adminAuth";
 import ExcelJS from "exceljs";
 import PDFDocument from "pdfkit";
 
+function toCairo(date: Date): string {
+  return date.toLocaleString("en-GB", { timeZone: "Africa/Cairo" });
+}
+
+function toCairoDate(date: Date): string {
+  return date.toLocaleDateString("en-GB", { timeZone: "Africa/Cairo" });
+}
+
 export async function GET(req: NextRequest) {
   if (!verifyAdmin(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { searchParams } = new URL(req.url);
   const format = searchParams.get("format") || "xlsx";
   const type = searchParams.get("type") || "registrations";
+
+  // Validate format
+  if (!['xlsx', 'pdf'].includes(format)) {
+    return NextResponse.json({ error: `Unsupported format '${format}'. Use: xlsx, pdf` }, { status: 400 });
+  }
 
   const pool = getPool();
 
@@ -21,29 +34,33 @@ export async function GET(req: NextRequest) {
     // Registrations sheet
     const regsSheet = wb.addWorksheet("Registrations");
     regsSheet.columns = [
-      { header: "ID",         key: "id",         width: 8 },
-      { header: "Name",       key: "full_name",  width: 25 },
-      { header: "Email",      key: "email",      width: 30 },
-      { header: "Phone",      key: "phone",      width: 18 },
-      { header: "Course",     key: "course",     width: 30 },
-      { header: "Country",    key: "country",    width: 15 },
-      { header: "Payment",     key: "payment_method", width: 18 },
-      { header: "Status",     key: "status",     width: 12 },
-      { header: "Date",       key: "created_at", width: 20 },
+      { header: "ID",         key: "id",               width: 8 },
+      { header: "Name",       key: "full_name",        width: 25 },
+      { header: "Email",      key: "email",            width: 30 },
+      { header: "Phone",      key: "phone",            width: 18 },
+      { header: "Phone (Normalized)", key: "phone_normalized", width: 18 },
+      { header: "Course",     key: "course",           width: 30 },
+      { header: "Country",    key: "country",          width: 15 },
+      { header: "Payment",    key: "payment_method",   width: 18 },
+      { header: "Amount",     key: "payment_amount",   width: 12 },
+      { header: "Reference",  key: "payment_reference", width: 20 },
+      { header: "Status",     key: "status",           width: 12 },
+      { header: "Date (Cairo)", key: "created_at",     width: 22 },
     ];
 
-    // Style header row
     regsSheet.getRow(1).eachCell((cell) => {
       cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF0D3B5C" } };
       cell.font = { color: { argb: "FFFFFFFF" }, bold: true };
       cell.alignment = { horizontal: "center" };
     });
 
-    const { rows: regs } = await pool.query("SELECT * FROM registrations ORDER BY created_at DESC");
+    const { rows: regs } = await pool.query(
+      `SELECT *, (created_at AT TIME ZONE 'Africa/Cairo') as created_at_cairo FROM registrations ORDER BY created_at DESC`
+    );
     regs.forEach((r) => {
       regsSheet.addRow({
         ...r,
-        created_at: new Date(r.created_at).toLocaleString("en-GB"),
+        created_at: toCairo(new Date(r.created_at_cairo || r.created_at)),
       });
     });
 
@@ -57,33 +74,64 @@ export async function GET(req: NextRequest) {
       { header: "Subject", key: "subject",    width: 30 },
       { header: "Message", key: "message",    width: 50 },
       { header: "Status",  key: "status",     width: 12 },
-      { header: "Date",    key: "created_at", width: 20 },
+      { header: "Date (Cairo)", key: "created_at", width: 22 },
     ];
     conSheet.getRow(1).eachCell((cell) => {
       cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF0D3B5C" } };
       cell.font = { color: { argb: "FFFFFFFF" }, bold: true };
       cell.alignment = { horizontal: "center" };
     });
-    const { rows: contacts } = await pool.query("SELECT * FROM contacts ORDER BY created_at DESC");
+    const { rows: contacts } = await pool.query(
+      `SELECT *, (created_at AT TIME ZONE 'Africa/Cairo') as created_at_cairo FROM contacts ORDER BY created_at DESC`
+    );
     contacts.forEach((r) => {
-      conSheet.addRow({ ...r, created_at: new Date(r.created_at).toLocaleString("en-GB") });
+      conSheet.addRow({ ...r, created_at: toCairo(new Date(r.created_at_cairo || r.created_at)) });
+    });
+
+    // Consultations sheet
+    const consultSheet = wb.addWorksheet("Consultations");
+    consultSheet.columns = [
+      { header: "ID",             key: "id",             width: 8 },
+      { header: "Name",           key: "name",           width: 25 },
+      { header: "Email",          key: "email",          width: 30 },
+      { header: "Phone",          key: "phone",          width: 18 },
+      { header: "Company",        key: "company",        width: 25 },
+      { header: "Service",        key: "service",        width: 30 },
+      { header: "Preferred Date", key: "preferred_date", width: 15 },
+      { header: "Preferred Time", key: "preferred_time", width: 15 },
+      { header: "Message",        key: "message",        width: 40 },
+      { header: "Status",         key: "status",         width: 12 },
+      { header: "Date (Cairo)",   key: "created_at",     width: 22 },
+    ];
+    consultSheet.getRow(1).eachCell((cell) => {
+      cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF0D3B5C" } };
+      cell.font = { color: { argb: "FFFFFFFF" }, bold: true };
+      cell.alignment = { horizontal: "center" };
+    });
+    const { rows: consultations } = await pool.query(
+      `SELECT *, (created_at AT TIME ZONE 'Africa/Cairo') as created_at_cairo FROM consultations ORDER BY created_at DESC`
+    );
+    consultations.forEach((r) => {
+      consultSheet.addRow({ ...r, created_at: toCairo(new Date(r.created_at_cairo || r.created_at)) });
     });
 
     // Subscribers sheet
     const subSheet = wb.addWorksheet("Newsletter");
     subSheet.columns = [
-      { header: "ID",    key: "id",         width: 8 },
-      { header: "Email", key: "email",      width: 35 },
-      { header: "Date",  key: "created_at", width: 20 },
+      { header: "ID",           key: "id",         width: 8 },
+      { header: "Email",        key: "email",      width: 35 },
+      { header: "Date (Cairo)", key: "created_at", width: 22 },
     ];
     subSheet.getRow(1).eachCell((cell) => {
       cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF0D3B5C" } };
       cell.font = { color: { argb: "FFFFFFFF" }, bold: true };
       cell.alignment = { horizontal: "center" };
     });
-    const { rows: subs } = await pool.query("SELECT * FROM newsletter_subscribers ORDER BY created_at DESC");
+    const { rows: subs } = await pool.query(
+      `SELECT *, (created_at AT TIME ZONE 'Africa/Cairo') as created_at_cairo FROM newsletter_subscribers ORDER BY created_at DESC`
+    );
     subs.forEach((r) => {
-      subSheet.addRow({ ...r, created_at: new Date(r.created_at).toLocaleString("en-GB") });
+      subSheet.addRow({ ...r, created_at: toCairo(new Date(r.created_at_cairo || r.created_at)) });
     });
 
     const buffer = await wb.xlsx.writeBuffer();
@@ -112,13 +160,13 @@ export async function GET(req: NextRequest) {
 
     const primaryColor = "#0D3B5C";
     const accentColor = "#F58220";
-    const date = new Date().toLocaleDateString("en-GB");
+    const date = toCairoDate(new Date());
     const title = type === "contacts" ? "Contact Messages" : "Course Registrations";
 
     // Header bar
     doc.rect(0, 0, doc.page.width, 70).fill(primaryColor);
     doc.fontSize(20).fillColor("white").text(`Walk Business — ${title}`, 40, 22);
-    doc.fontSize(10).fillColor(accentColor).text(`Generated: ${date}  |  Total: ${rows.length}`, 40, 48);
+    doc.fontSize(10).fillColor(accentColor).text(`Generated: ${date} (Cairo)  |  Total: ${rows.length}`, 40, 48);
 
     doc.moveDown(3);
 
@@ -154,8 +202,8 @@ export async function GET(req: NextRequest) {
       doc.fontSize(7.5).fillColor("#333");
       x = startX + 5;
       const values = type === "contacts"
-        ? [row.id, row.name, row.email, row.phone || "—", (row.subject || "").substring(0, 20), row.status, new Date(row.created_at).toLocaleDateString("en-GB")]
-        : [row.id, row.full_name, row.email, row.phone || "—", row.course.substring(0, 15), row.country || "—", row.payment_method || "—", row.status, new Date(row.created_at).toLocaleDateString("en-GB")];
+        ? [row.id, row.name, row.email, row.phone || "—", (row.subject || "").substring(0, 20), row.status, toCairoDate(new Date(row.created_at))]
+        : [row.id, row.full_name, row.email, row.phone || "—", row.course.substring(0, 15), row.country || "—", row.payment_method || "—", row.status, toCairoDate(new Date(row.created_at))];
 
       values.forEach((val, i) => {
         doc.text(String(val), x, y + 5, { width: colWidths[i] - 2, lineBreak: false, ellipsis: true });

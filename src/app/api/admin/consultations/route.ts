@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getPool } from "@/lib/db";
 import { verifyAdmin } from "@/lib/adminAuth";
+import { VALID_STATUSES } from "@/lib/validators";
 
 export async function GET(req: NextRequest) {
   if (!verifyAdmin(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -19,7 +20,15 @@ export async function GET(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
   if (!verifyAdmin(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { id, status } = await req.json();
+
+  if (!id) return NextResponse.json({ error: 'ID is required' }, { status: 400 });
+  if (!status) return NextResponse.json({ error: 'Status is required' }, { status: 400 });
+  if (!VALID_STATUSES.consultations.includes(status)) {
+    return NextResponse.json({ error: `Invalid status. Allowed: ${VALID_STATUSES.consultations.join(', ')}` }, { status: 400 });
+  }
+
   const pool = getPool();
-  await pool.query("UPDATE consultations SET status=$1 WHERE id=$2", [status, id]);
-  return NextResponse.json({ ok: true });
+  const { rows } = await pool.query("UPDATE consultations SET status=$1 WHERE id=$2 RETURNING *", [status, id]);
+  if (!rows[0]) return NextResponse.json({ error: 'Not found' }, { status: 404 });
+  return NextResponse.json({ ok: true, consultation: rows[0] });
 }

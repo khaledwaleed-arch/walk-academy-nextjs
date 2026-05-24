@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyAdmin } from "@/lib/adminAuth";
 import { getPool } from "@/lib/db";
+import { handleDbError } from "@/lib/error-handler";
 
 const pool = getPool();
 function auth(req: NextRequest) { return verifyAdmin(req); }
+
+function slugify(text: string): string {
+  return text.toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-').replace(/^-+|-+$/g, '');
+}
 
 export async function GET(req: NextRequest) {
   if (!auth(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -51,8 +56,8 @@ export async function GET(req: NextRequest) {
   const { rows } = await pool.query(q, params);
   const posts = rows.map(r => ({
     ...r,
-    category_names: (r.category_names || []).map((x: any) => x.name).filter(Boolean),
-    tag_names: (r.tag_names || []).map((x: any) => x.name).filter(Boolean),
+    category_names: (r.category_names || []).map((x: { name: string }) => x.name).filter(Boolean),
+    tag_names: (r.tag_names || []).map((x: { name: string }) => x.name).filter(Boolean),
   }));
   return NextResponse.json({ posts, counts });
 }
@@ -60,29 +65,38 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   if (!auth(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const body = await req.json();
-  const { title, slug, content, excerpt, status, featured_image_url, meta_title, meta_description,
+  const { title, content, excerpt, status, featured_image_url, meta_title, meta_description,
     author_name, category_ids, tag_ids, scheduled_at, visibility, password } = body;
 
-  const published_at = status === "published" ? new Date() : null;
-  const { rows } = await pool.query(
-    `INSERT INTO posts (title, slug, content, excerpt, status, featured_image_url, meta_title, meta_description,
-     author_name, published_at, scheduled_at, visibility, password, updated_at)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,NOW()) RETURNING *`,
-    [title, slug, content, excerpt, status || "draft", featured_image_url || "",
-     meta_title || "", meta_description || "", author_name || "Walk Academy",
-     published_at, scheduled_at || null, visibility || "public", password || ""]
-  );
-  const post = rows[0];
+  // Auto-generate slug if not provided
+  const rawSlug = (body.slug || '').trim() || slugify(title || '');
+  if (!rawSlug) return NextResponse.json({ error: 'Slug or title is required' }, { status: 400 });
 
-  if (category_ids?.length) {
-    for (const cid of category_ids) {
-      await pool.query("INSERT INTO post_categories (post_id, category_id) VALUES ($1,$2) ON CONFLICT DO NOTHING", [post.id, cid]);
+  const published_at = status === "published" ? new Date() : null;
+
+  try {
+    const { rows } = await pool.query(
+      `INSERT INTO posts (title, slug, content, excerpt, status, featured_image_url, meta_title, meta_description,
+       author_name, published_at, scheduled_at, visibility, password, updated_at)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,NOW()) RETURNING *`,
+      [title, rawSlug, content, excerpt, status || "draft", featured_image_url || "",
+       meta_title || "", meta_description || "", author_name || "Walk Academy",
+       published_at, scheduled_at || null, visibility || "public", password || ""]
+    );
+    const post = rows[0];
+
+    if (category_ids?.length) {
+      for (const cid of category_ids) {
+        await pool.query("INSERT INTO post_categories (post_id, category_id) VALUES ($1,$2) ON CONFLICT DO NOTHING", [post.id, cid]);
+      }
     }
-  }
-  if (tag_ids?.length) {
-    for (const tid of tag_ids) {
-      await pool.query("INSERT INTO post_tags (post_id, tag_id) VALUES ($1,$2) ON CONFLICT DO NOTHING", [post.id, tid]);
+    if (tag_ids?.length) {
+      for (const tid of tag_ids) {
+        await pool.query("INSERT INTO post_tags (post_id, tag_id) VALUES ($1,$2) ON CONFLICT DO NOTHING", [post.id, tid]);
+      }
     }
+    return NextResponse.json(post, { status: 201 });
+  } catch (err) {
+    return handleDbError(err);
   }
-  return NextResponse.json(post, { status: 201 });
 }

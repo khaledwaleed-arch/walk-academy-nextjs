@@ -2,8 +2,25 @@ import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { verifyAdmin } from "@/lib/adminAuth";
 import { getPool } from "@/lib/db";
+import { handleDbError } from "@/lib/error-handler";
+import { buildUpdateQuery, AllowedFields } from "@/lib/db-helpers";
 
 const pool = getPool();
+
+const COURSE_FIELDS: AllowedFields = {
+  title_en: 'text', title_ar: 'text', slug: 'text', tagline_en: 'text', tagline_ar: 'text',
+  description_en: 'text', description_ar: 'text', level: 'text', level_color: 'text',
+  duration_en: 'text', duration_ar: 'text', price: 'text', status: 'text',
+  featured_image: 'text',
+  instructor_name: 'text', instructor_title_en: 'text', instructor_title_ar: 'text',
+  instructor_bio_en: 'text', instructor_bio_ar: 'text',
+  schedule_en: 'text', schedule_ar: 'text', start_date_en: 'text', start_date_ar: 'text',
+  location_en: 'text', location_ar: 'text',
+  sort_order: 'int',
+  modules_en: 'jsonb', modules_ar: 'jsonb',
+  outcomes_en: 'jsonb', outcomes_ar: 'jsonb',
+  audience_en: 'jsonb', audience_ar: 'jsonb',
+};
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   if (!verifyAdmin(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -17,52 +34,29 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   if (!verifyAdmin(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { id } = await params;
   const body = await req.json();
-  const {
-    slug, status, price, level_color, sort_order,
-    title_en, title_ar, duration_en, duration_ar, tagline_en, tagline_ar,
-    description_en, description_ar,
-    outcomes_en, outcomes_ar, modules_en, modules_ar, audience_en, audience_ar,
-    instructor_name, instructor_title_en, instructor_title_ar,
-    instructor_bio_en, instructor_bio_ar,
-    schedule_en, schedule_ar, start_date_en, start_date_ar,
-    location_en, location_ar,
-  } = body;
 
-  const { rows } = await pool.query(
-    `UPDATE courses SET
-      slug=$1, status=$2, price=$3, level_color=$4, sort_order=$5,
-      title_en=$6, title_ar=$7, duration_en=$8, duration_ar=$9,
-      tagline_en=$10, tagline_ar=$11, description_en=$12, description_ar=$13,
-      outcomes_en=$14, outcomes_ar=$15, modules_en=$16, modules_ar=$17,
-      audience_en=$18, audience_ar=$19,
-      instructor_name=$20, instructor_title_en=$21, instructor_title_ar=$22,
-      instructor_bio_en=$23, instructor_bio_ar=$24,
-      schedule_en=$25, schedule_ar=$26, start_date_en=$27, start_date_ar=$28,
-      location_en=$29, location_ar=$30,
-      updated_at=NOW()
-     WHERE id=$31 RETURNING *`,
-    [slug, status, price, level_color, sort_order,
-     title_en, title_ar, duration_en, duration_ar,
-     tagline_en, tagline_ar, description_en, description_ar,
-     JSON.stringify(outcomes_en), JSON.stringify(outcomes_ar),
-     JSON.stringify(modules_en), JSON.stringify(modules_ar),
-     JSON.stringify(audience_en), JSON.stringify(audience_ar),
-     instructor_name, instructor_title_en, instructor_title_ar,
-     instructor_bio_en, instructor_bio_ar,
-     schedule_en, schedule_ar, start_date_en, start_date_ar,
-     location_en, location_ar,
-     id]
-  );
-  if (!rows[0]) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  revalidatePath(`/courses/${rows[0].slug}`);
-  revalidatePath("/courses");
-  revalidatePath("/");
-  return NextResponse.json(rows[0]);
+  const query = buildUpdateQuery('courses', parseInt(id), body, COURSE_FIELDS);
+  if (!query) return NextResponse.json({ error: 'No valid fields to update' }, { status: 400 });
+
+  try {
+    const { rows } = await pool.query(query.text, query.values);
+    if (!rows[0]) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    revalidatePath(`/courses/${rows[0].slug}`);
+    revalidatePath("/courses");
+    revalidatePath("/");
+    return NextResponse.json(rows[0]);
+  } catch (err) {
+    return handleDbError(err);
+  }
 }
 
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   if (!verifyAdmin(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { id } = await params;
-  await pool.query("DELETE FROM courses WHERE id=$1", [id]);
-  return NextResponse.json({ ok: true });
+  try {
+    await pool.query("DELETE FROM courses WHERE id=$1", [id]);
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    return handleDbError(err);
+  }
 }

@@ -1,11 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getPool } from "@/lib/db";
 import { sendMail } from "@/lib/mailer";
+import { validateEmail, sanitizeString } from "@/lib/validators";
 
 export async function POST(req: NextRequest) {
   try {
-    const { email } = await req.json();
+    const body = await req.json();
+    const email = sanitizeString(body.email)?.trim().toLowerCase();
+
     if (!email) return NextResponse.json({ error: "Email required" }, { status: 400 });
+
+    if (!validateEmail(email)) {
+      return NextResponse.json({ error: "Invalid email address" }, { status: 400 });
+    }
 
     const pool = getPool();
     try {
@@ -25,7 +32,7 @@ export async function POST(req: NextRequest) {
       `<p>New subscriber: <b>${email}</b></p>`
     );
 
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true }, { status: 201 });
   } catch (err) {
     console.error("subscribe error:", err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });

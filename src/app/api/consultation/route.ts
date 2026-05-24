@@ -2,26 +2,38 @@ import { NextRequest, NextResponse } from "next/server";
 import { getPool } from "@/lib/db";
 import { sendMail } from "@/lib/mailer";
 import { sendWhatsApp } from "@/lib/whatsapp";
+import { validateEmail, sanitizeString } from "@/lib/validators";
 
 export async function POST(req: NextRequest) {
   try {
-    const { name, email, phone, company, service, preferred_date, preferred_time, message } =
-      await req.json();
+    const body = await req.json();
+    const name = sanitizeString(body.name)?.trim();
+    const email = sanitizeString(body.email)?.trim().toLowerCase();
+    const phone = sanitizeString(body.phone)?.trim() || null;
+    const company = sanitizeString(body.company)?.trim() || null;
+    const service = sanitizeString(body.service)?.trim();
+    const preferred_date = sanitizeString(body.preferred_date)?.trim() || null;
+    const preferred_time = sanitizeString(body.preferred_time)?.trim() || null;
+    const message = sanitizeString(body.message)?.trim() || null;
 
     if (!name || !email || !service) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+      return NextResponse.json({ error: "Missing required fields: name, email, service" }, { status: 400 });
+    }
+
+    if (!validateEmail(email)) {
+      return NextResponse.json({ error: "Invalid email address" }, { status: 400 });
     }
 
     const pool = getPool();
     const result = await pool.query(
       `INSERT INTO consultations (name, email, phone, company, service, preferred_date, preferred_time, message)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id, created_at`,
-      [name, email, phone || null, company || null, service, preferred_date || null, preferred_time || null, message || null]
+      [name, email, phone, company, service, preferred_date, preferred_time, message]
     );
     const { id, created_at } = result.rows[0];
 
     await sendMail(
-      `📅 Consultation Request #${id} — ${name}`,
+      `Consultation Request #${id} — ${name}`,
       `<div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;padding:20px;background:#f5f5f5;border-radius:12px">
         <div style="background:#0D3B5C;padding:20px;border-radius:8px 8px 0 0;text-align:center">
           <h1 style="color:white;margin:0;font-size:22px">New Consultation Request</h1>
@@ -47,7 +59,7 @@ export async function POST(req: NextRequest) {
     );
 
     await sendWhatsApp(
-      `📅 Consultation Request #${id}\n` +
+      `Consultation Request #${id}\n` +
       `Name: ${name}\n` +
       `Service: ${service}\n` +
       `Phone: ${phone || "—"}\n` +
@@ -55,7 +67,7 @@ export async function POST(req: NextRequest) {
       `Date: ${preferred_date || "—"} ${preferred_time || ""}`
     );
 
-    return NextResponse.json({ ok: true, id });
+    return NextResponse.json({ ok: true, id }, { status: 201 });
   } catch (err) {
     console.error("consultation error:", err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
