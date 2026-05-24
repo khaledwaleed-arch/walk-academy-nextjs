@@ -5,7 +5,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 
 interface Registration {
   id: number; full_name: string; email: string; phone: string;
-  course: string; country: string; status: string; created_at: string;
+  course: string; country: string; payment_method: string; status: string; created_at: string;
 }
 
 function useToken() {
@@ -108,6 +108,7 @@ export default function RegistrationsPage() {
                   <th className="text-start px-4 py-3 font-medium text-gray-600 hidden md:table-cell">{t("phoneCol")}</th>
                   <th className="text-start px-4 py-3 font-medium text-gray-600">{t("courseCol")}</th>
                   <th className="text-start px-4 py-3 font-medium text-gray-600 hidden lg:table-cell">{t("countryCol")}</th>
+                  <th className="text-start px-4 py-3 font-medium text-gray-600 hidden lg:table-cell">Payment</th>
                   <th className="text-start px-4 py-3 font-medium text-gray-600">{t("statusCol")}</th>
                   <th className="text-start px-4 py-3 font-medium text-gray-600 hidden lg:table-cell">{t("dateCol")}</th>
                 </tr>
@@ -123,6 +124,11 @@ export default function RegistrationsPage() {
                     <td className="px-4 py-3 text-gray-500 hidden md:table-cell">{r.phone || "—"}</td>
                     <td className="px-4 py-3 text-gray-700 font-medium">{r.course}</td>
                     <td className="px-4 py-3 text-gray-500 hidden lg:table-cell">{r.country || "—"}</td>
+                    <td className="px-4 py-3 hidden lg:table-cell">
+                      {r.payment_method ? (
+                        <span className="text-xs font-semibold px-2 py-1 rounded-full bg-purple-100 text-purple-700">{r.payment_method}</span>
+                      ) : "—"}
+                    </td>
                     <td className="px-4 py-3">
                       <select value={r.status} onChange={e => updateStatus(r.id, e.target.value)}
                         className={`text-xs font-semibold px-2 py-1 rounded-full border-0 cursor-pointer ${STATUS_COLORS[r.status] || "bg-gray-100 text-gray-600"}`}>

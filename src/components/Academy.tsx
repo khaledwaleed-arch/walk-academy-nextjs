@@ -1,24 +1,17 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { AnimatedSection, StaggerGrid, StaggerItem } from "./AnimatedSection";
 import { useI18n } from "@/lib/i18n";
 
-interface Course {
+export interface CourseItem {
   id: number; slug: string; price: string; level_color: string;
   title_en: string; title_ar: string;
   duration_en: string; duration_ar: string;
 }
 
-export default function Academy() {
+export default function Academy({ initialCourses = [] }: { initialCourses?: CourseItem[] }) {
   const { t, isRTL } = useI18n();
-  const [courses, setCourses] = useState<Course[]>([]);
-
-  useEffect(() => {
-    fetch("/api/courses").then(r => r.json()).then(data => {
-      if (Array.isArray(data)) setCourses(data);
-    }).catch(() => {});
-  }, []);
+  const courses = initialCourses;
 
   return (
     <section id="academy" dir={isRTL ? "rtl" : "ltr"} className="py-24 bg-[#F5F5F5]">

@@ -613,14 +613,14 @@ const I18nContext = createContext<{
   isRTL: false,
 });
 
-export function I18nProvider({ children }: { children: ReactNode }) {
+export function I18nProvider({ children, initialOverrides = {} }: { children: ReactNode; initialOverrides?: Record<string, Record<string, string>> }) {
   const [lang, setLangState] = useState<Lang>("en");
-  const [overrides, setOverrides] = useState<Record<string, Record<string, string>>>({});
+  const [overrides, setOverrides] = useState<Record<string, Record<string, string>>>(initialOverrides);
 
   useEffect(() => {
     const saved = (localStorage.getItem("walk_lang") as Lang) || "en";
     if (saved !== lang) setLangState(saved);
-    // Load content overrides from DB once
+    // Refresh overrides from DB (picks up any changes made after SSR)
     fetch("/api/content-overrides")
       .then((r) => r.json())
       .then((data) => setOverrides(data))

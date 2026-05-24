@@ -1,0 +1,241 @@
+================================================================================
+  WALK ACADEMY — QA Phase 1: Discovery Report
+  Date: 2026-05-23
+================================================================================
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. STACK
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Framework      : Next.js 16.2.6 (Turbopack)
+React          : 19.2.4
+Language       : TypeScript 5
+Styling        : Tailwind CSS 4
+DB Driver      : pg (raw SQL) — no ORM
+Database       : PostgreSQL | DB: walk_business | User: walk_app
+Rich Text      : TipTap 3
+Export         : pdfkit + ExcelJS
+Email          : Nodemailer → Titan SMTP (register@walk-business.com)
+WhatsApp       : Green API
+Analytics      : GA4 (G-X77449RTMC)
+YouTube        : Channel UCa3Zakmv2M7bp9vs8b7Lynw
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2. AUTH SYSTEM
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Method         : SHA-256(ADMIN_SECRET) → static bearer token
+Header         : Authorization: Bearer <token>
+Session        : None (stateless)
+JWT            : None
+Cookies        : None
+Expiry         : None — token never expires
+
+[!] RISK: Token cannot be invalidated without changing ADMIN_SECRET + restarting service
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3. RUNTIME & INFRASTRUCTURE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Process Manager: systemd (walk-academy.service)
+Internal Port  : 3001
+Public URL     : https://walk-business.com
+Proxy          : Nginx (reverse proxy → 127.0.0.1:3001)
+SSL            : Nginx handles HTTPS on port 443
+Run As         : root
+Memory         : ~101MB
+Working Dir    : /root/walk-academy-nextjs
+Start Command  : node node_modules/.bin/next start -p 3001
+
+Staging        : NOT FOUND — production only
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+4. DATABASE — TABLES & ROW COUNTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Table                   Rows    Columns
+-----------------------  ------  -------
+courses                  2       33
+registrations            5       9
+services                 5       10
+sections                 15      8
+content_overrides        26      3
+contacts                 2       8
+consultations            2       11
+categories               4       5
+newsletter_subscribers   1       3
+posts                    0       17
+pages                    0       11
+media                    0       8
+tags                     0       4
+post_categories          0       2
+post_tags                0       2
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+5. SCHEMA — TOP 5 TABLES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+── courses (33 columns) ────────────────────────────────────────────────────────
+  Column               Type                Nullable  Default
+  id                   integer             NO        nextval(seq)
+  slug                 varchar(200)        NO        — (UNIQUE)
+  status               varchar(20)         NO        'draft'
+  price                varchar(50)         YES
+  level_color          varchar(50)         YES       'bg-blue-500'
+  sort_order           integer             YES       0
+  title_en             text                YES
+  title_ar             text                YES
+  duration_en          text                YES
+  duration_ar          text                YES
+  tagline_en           text                YES
+  tagline_ar           text                YES
+  description_en       text                YES
+  description_ar       text                YES
+  outcomes_en          jsonb               YES       '[]'
+  outcomes_ar          jsonb               YES       '[]'
+  modules_en           jsonb               YES       '[]'
+  modules_ar           jsonb               YES       '[]'
+  audience_en          jsonb               YES       '[]'
+  audience_ar          jsonb               YES       '[]'
+  instructor_name      text                YES       ''
+  instructor_title_en  text                YES       ''
+  instructor_title_ar  text                YES       ''
+  instructor_bio_en    text                YES       ''
+  instructor_bio_ar    text                YES       ''
+  schedule_en          text                YES       ''
+  schedule_ar          text                YES       ''
+  start_date_en        text                YES       ''
+  start_date_ar        text                YES       ''
+  location_en          text                YES       'In Person — Cairo'
+  location_ar          text                YES       'حضوري — القاهرة'
+  created_at           timestamptz         YES       now()
+  updated_at           timestamptz         YES       now()
+
+── registrations (9 columns) ───────────────────────────────────────────────────
+  Column          Type              Nullable  Default
+  id              integer           NO        nextval(seq)
+  full_name       varchar(200)      NO
+  email           varchar(200)      NO
+  phone           varchar(50)       YES
+  course          varchar(100)      NO
+  country         varchar(100)      YES
+  status          varchar(20)       YES       'new'
+  created_at      timestamptz       YES       now()
+  payment_method  varchar(50)       YES
+
+── services (10 columns) ───────────────────────────────────────────────────────
+  Column      Type              Nullable  Default
+  id          integer           NO        nextval(seq)
+  slug        varchar(100)      NO        — (UNIQUE)
+  icon        varchar(100)      NO        'fa-star'
+  title_en    text              NO        ''
+  title_ar    text              NO        ''
+  desc_en     text              NO        ''
+  desc_ar     text              NO        ''
+  sort_order  integer           NO        0
+  visible     boolean           NO        true
+  created_at  timestamptz       YES       now()
+
+── sections (8 columns) ────────────────────────────────────────────────────────
+  Column      Type              Nullable  Default
+  id          integer           NO        nextval(seq)
+  key         varchar(50)       NO        — (UNIQUE)
+  label       varchar(100)      NO
+  is_visible  boolean           YES       true
+  sort_order  integer           YES       0
+  updated_at  timestamptz       YES       now()
+  type        varchar(20)       YES       'built-in'
+  content     jsonb             YES       '{}'
+
+── content_overrides (3 columns) ───────────────────────────────────────────────
+  Column  Type          Nullable  Notes
+  lang    varchar(5)    NO        PK part 1 (en/ar/fr)
+  key     varchar(200)  NO        PK part 2
+  value   text          NO
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+6. ROUTES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+── Admin API (Bearer token required) ───────────────────────────────────────────
+  GET  POST               /api/admin/courses
+  GET  PUT  DELETE        /api/admin/courses/[id]
+  GET  POST               /api/admin/services
+       PUT  DELETE        /api/admin/services/[id]
+  GET  PUT                /api/admin/sections/[key]
+  GET  PATCH              /api/admin/registrations
+  GET  PATCH              /api/admin/contacts
+  GET  PATCH              /api/admin/consultations
+  GET                     /api/admin/export  (?format=xlsx|pdf)
+  GET                     /api/admin/stats
+  GET  POST               /api/admin/posts
+  GET  PUT  DELETE        /api/admin/posts/[id]
+  GET  POST               /api/admin/pages
+  GET  PUT  DELETE        /api/admin/pages/[id]
+  GET  POST               /api/admin/tags
+  GET  PUT  DELETE        /api/admin/tags/[id]
+  GET  POST               /api/admin/categories
+  GET  PUT  DELETE        /api/admin/categories/[id]
+  GET  POST  DELETE       /api/admin/media
+  DELETE                  /api/admin/media/[id]
+  POST                    /api/admin/upload
+  POST                    /api/admin/login
+
+── Public API (no auth) ────────────────────────────────────────────────────────
+  GET  /api/courses               All published courses
+  GET  /api/courses/[slug]        Single course by slug
+  GET  /api/services              All visible services
+  GET  /api/sections              Section order/visibility
+  GET  /api/content-overrides     i18n text overrides
+  POST /api/register              Student registration
+  POST /api/contact               Contact form
+  POST /api/consultation          Consultation request
+  POST /api/subscribe             Newsletter subscription
+  POST /api/deploy                Webhook auto-deploy
+
+── Pages ────────────────────────────────────────────────────────────────────────
+  /                    SSR + ISR (revalidate: 60s)
+  /courses             Static
+  /courses/[slug]      force-dynamic (SSR per request)
+  /consultation        Static
+  /register            Static
+  /privacy             Static
+  /terms               Static
+  /academy             Static
+  /admin               Client-side SPA (CP)
+  /admin/login         Client-side
+  /admin/*             Client-side (all CP pages)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+7. DB INDEXES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+UNIQUE indexes on: courses(slug), services(slug), sections(key),
+                   pages(slug), posts(slug), tags(slug), categories(slug),
+                   newsletter_subscribers(email),
+                   content_overrides(lang, key) [composite PK]
+No FK constraints between tables.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+8. QA RISK NOTES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[HIGH]   No staging environment — all tests hit production DB
+[HIGH]   Auth token never expires — no revocation mechanism
+[MED]    No ORM — raw SQL in every route (SQL injection risk if inputs aren't sanitised)
+[MED]    No FK constraints — orphaned data possible (e.g. registration for deleted course)
+[MED]    App runs as root — privilege escalation risk if exploited
+[LOW]    Empty tables: posts, pages, media, tags — CP features exist but no frontend rendering
+[LOW]    WebFetch cache (15min) — not suitable for verifying immediate changes
+
+
+================================================================================
+  END OF REPORT — Phase 1 Complete | Awaiting approval for Phase 2
+================================================================================

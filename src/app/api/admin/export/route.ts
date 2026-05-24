@@ -27,6 +27,7 @@ export async function GET(req: NextRequest) {
       { header: "Phone",      key: "phone",      width: 18 },
       { header: "Course",     key: "course",     width: 30 },
       { header: "Country",    key: "country",    width: 15 },
+      { header: "Payment",     key: "payment_method", width: 18 },
       { header: "Status",     key: "status",     width: 12 },
       { header: "Date",       key: "created_at", width: 20 },
     ];
@@ -123,11 +124,11 @@ export async function GET(req: NextRequest) {
 
     const cols = type === "contacts"
       ? ["ID", "Name", "Email", "Phone", "Subject", "Status", "Date"]
-      : ["ID", "Name", "Email", "Phone", "Course", "Country", "Status", "Date"];
+      : ["ID", "Name", "Email", "Phone", "Course", "Country", "Payment", "Status", "Date"];
 
     const colWidths = type === "contacts"
       ? [30, 100, 140, 90, 120, 60, 80]
-      : [30, 100, 130, 90, 100, 70, 60, 80];
+      : [30, 90, 120, 80, 90, 60, 70, 55, 70];
 
     const startX = 40;
     let y = 90;
@@ -154,7 +155,7 @@ export async function GET(req: NextRequest) {
       x = startX + 5;
       const values = type === "contacts"
         ? [row.id, row.name, row.email, row.phone || "—", (row.subject || "").substring(0, 20), row.status, new Date(row.created_at).toLocaleDateString("en-GB")]
-        : [row.id, row.full_name, row.email, row.phone || "—", row.course.substring(0, 15), row.country || "—", row.status, new Date(row.created_at).toLocaleDateString("en-GB")];
+        : [row.id, row.full_name, row.email, row.phone || "—", row.course.substring(0, 15), row.country || "—", row.payment_method || "—", row.status, new Date(row.created_at).toLocaleDateString("en-GB")];
 
       values.forEach((val, i) => {
         doc.text(String(val), x, y + 5, { width: colWidths[i] - 2, lineBreak: false, ellipsis: true });

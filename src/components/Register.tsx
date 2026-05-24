@@ -41,14 +41,15 @@ export default function Register() {
     e.preventDefault();
     setStatus("sending");
     const fd = new FormData(e.currentTarget);
-    const body = Object.fromEntries(fd.entries());
+    const body = Object.fromEntries(fd.entries()) as Record<string, string>;
+    body.payment_method = paymentMethod;
     try {
       const res = await fetch("/api/register", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
       if (res.ok) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const gtag = (window as any).gtag;
         if (typeof gtag === "function") {
-          gtag("event", "generate_lead", { event_category: "registration", event_label: body.course as string || "unknown" });
+          gtag("event", "generate_lead", { event_category: "registration", event_label: body.course || "unknown" });
         }
       }
       setStatus(res.ok ? "ok" : "err");

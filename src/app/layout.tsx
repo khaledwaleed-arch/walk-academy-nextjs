@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Cairo } from "next/font/google";
 import Script from "next/script";
 import { I18nProvider } from "@/lib/i18n";
+import { getPool } from "@/lib/db";
 import "./globals.css";
 
 const inter = Inter({
@@ -44,9 +45,19 @@ export const metadata: Metadata = {
   alternates: { canonical: "https://www.walk-business.com/" },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  let initialOverrides: Record<string, Record<string, string>> = {};
+  try {
+    const pool = getPool();
+    const { rows } = await pool.query("SELECT lang, key, value FROM content_overrides");
+    for (const row of rows) {
+      if (!initialOverrides[row.lang]) initialOverrides[row.lang] = {};
+      initialOverrides[row.lang][row.key] = row.value;
+    }
+  } catch { /* initialOverrides stays empty */ }
+
   return (
     <html
       lang="en"
@@ -97,7 +108,7 @@ export default function RootLayout({
         </>
       )}
       <body className="min-h-screen font-[var(--font-inter)]">
-        <I18nProvider>{children}</I18nProvider>
+        <I18nProvider initialOverrides={initialOverrides}>{children}</I18nProvider>
       </body>
     </html>
   );

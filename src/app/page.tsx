@@ -5,7 +5,7 @@ import StatsBar from "@/components/StatsBar";
 import Problem from "@/components/Problem";
 import Services, { ServiceItem } from "@/components/Services";
 import About from "@/components/About";
-import Academy from "@/components/Academy";
+import Academy, { type CourseItem } from "@/components/Academy";
 import OdooModules from "@/components/OdooModules";
 import WhyUs from "@/components/WhyUs";
 import Testimonials from "@/components/Testimonials";
@@ -70,6 +70,14 @@ export default async function Home() {
     services = rows;
   } catch { /* services stays empty */ }
 
+  let courses: CourseItem[] = [];
+  try {
+    const { rows } = await pool.query(
+      "SELECT id, slug, price, level_color, title_en, title_ar, duration_en, duration_ar FROM courses WHERE status='published' ORDER BY sort_order, id"
+    );
+    courses = rows;
+  } catch { /* courses stays empty */ }
+
   const visibleSections = sectionConfig.filter((s) => s.is_visible);
 
   return (
@@ -82,6 +90,9 @@ export default async function Home() {
           }
           if (s.key === "services") {
             return <Services key={s.key} initialServices={services} />;
+          }
+          if (s.key === "academy") {
+            return <Academy key={s.key} initialCourses={courses} />;
           }
           const Component = SECTION_MAP[s.key];
           return Component ? <Component key={s.key} /> : null;

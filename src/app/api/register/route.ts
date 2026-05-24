@@ -5,16 +5,16 @@ import { sendWhatsApp } from "@/lib/whatsapp";
 
 export async function POST(req: NextRequest) {
   try {
-    const { full_name, email, phone, course, country } = await req.json();
+    const { full_name, email, phone, course, country, payment_method } = await req.json();
     if (!full_name || !email || !course) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
     const pool = getPool();
     const result = await pool.query(
-      `INSERT INTO registrations (full_name, email, phone, course, country)
-       VALUES ($1, $2, $3, $4, $5) RETURNING id, created_at`,
-      [full_name, email, phone || null, course, country || null]
+      `INSERT INTO registrations (full_name, email, phone, course, country, payment_method)
+       VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, created_at`,
+      [full_name, email, phone || null, course, country || null, payment_method || null]
     );
     const { id, created_at } = result.rows[0];
 
@@ -33,7 +33,8 @@ export async function POST(req: NextRequest) {
             <tr><td style="padding:8px;color:#666">Phone</td><td style="padding:8px;color:#0D3B5C">${phone || "—"}</td></tr>
             <tr style="background:#f9f9f9"><td style="padding:8px;color:#666">Course</td><td style="padding:8px;font-weight:bold;color:#F58220">${course}</td></tr>
             <tr><td style="padding:8px;color:#666">Country</td><td style="padding:8px;color:#0D3B5C">${country || "—"}</td></tr>
-            <tr style="background:#f9f9f9"><td style="padding:8px;color:#666">Date</td><td style="padding:8px;color:#0D3B5C">${new Date(created_at).toLocaleString("en-GB")}</td></tr>
+            <tr style="background:#f9f9f9"><td style="padding:8px;color:#666">Payment</td><td style="padding:8px;font-weight:bold;color:#F58220">${payment_method || "—"}</td></tr>
+            <tr><td style="padding:8px;color:#666">Date</td><td style="padding:8px;color:#0D3B5C">${new Date(created_at).toLocaleString("en-GB")}</td></tr>
           </table>
           <div style="margin-top:20px;text-align:center">
             <a href="https://walk-business.com/admin" style="background:#F58220;color:white;padding:12px 24px;border-radius:24px;text-decoration:none;font-weight:bold">View in Admin Panel</a>
@@ -49,7 +50,8 @@ export async function POST(req: NextRequest) {
       `Course: ${course}\n` +
       `Phone: ${phone || "—"}\n` +
       `Email: ${email}\n` +
-      `Country: ${country || "—"}`
+      `Country: ${country || "—"}\n` +
+      `Payment: ${payment_method || "—"}`
     );
 
     return NextResponse.json({ ok: true, id });
