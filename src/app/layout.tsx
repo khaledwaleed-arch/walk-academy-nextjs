@@ -60,7 +60,8 @@ export default async function RootLayout({
 
   return (
     <html
-      lang="en"
+      lang="ar"
+      dir="rtl"
       className={`${inter.variable} ${cairo.variable} antialiased`}
       suppressHydrationWarning
     >

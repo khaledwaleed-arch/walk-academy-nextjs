@@ -614,12 +614,16 @@ const I18nContext = createContext<{
 });
 
 export function I18nProvider({ children, initialOverrides = {} }: { children: ReactNode; initialOverrides?: Record<string, Record<string, string>> }) {
-  const [lang, setLangState] = useState<Lang>("en");
+  const [lang, setLangState] = useState<Lang>("ar");
   const [overrides, setOverrides] = useState<Record<string, Record<string, string>>>(initialOverrides);
 
   useEffect(() => {
-    const saved = (localStorage.getItem("walk_lang") as Lang) || "en";
-    if (saved !== lang) setLangState(saved);
+    const saved = localStorage.getItem("walk_lang") as Lang;
+    if (saved && (["en", "ar", "fr"] as Lang[]).includes(saved)) {
+      setLangState(saved);
+    } else {
+      localStorage.setItem("walk_lang", "ar");
+    }
     // Refresh overrides from DB (picks up any changes made after SSR)
     fetch("/api/content-overrides")
       .then((r) => r.json())
@@ -640,6 +644,8 @@ export function I18nProvider({ children, initialOverrides = {} }: { children: Re
   function setLang(newLang: Lang) {
     setLangState(newLang);
     localStorage.setItem("walk_lang", newLang);
+    document.documentElement.lang = newLang;
+    document.documentElement.dir = newLang === "ar" ? "rtl" : "ltr";
   }
 
   function t(key: string): string {

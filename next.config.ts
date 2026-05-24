@@ -3,6 +3,12 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   serverExternalPackages: ['pdfkit'],
+  async redirects() {
+    return [
+      { source: '/about',    destination: '/#about',    permanent: false },
+      { source: '/services', destination: '/#services', permanent: false },
+    ];
+  },
   async headers() {
     return [
       {
