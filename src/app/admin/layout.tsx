@@ -57,6 +57,7 @@ function NavItems({ t }: { t: (k: any) => string }) {
         { label: t("addNewPost"), href: "/admin/posts/new" },
         { label: t("categories"), href: "/admin/categories" },
         { label: t("tags"), href: "/admin/tags" },
+        { label: "FAQ", href: "/admin/faq" },
       ],
     },
     {
@@ -244,7 +245,7 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
     // Auto-expand active section — use translated labels since open state stores them
     // We expand by checking pathname against known child paths
     const CHILDREN_MAP: Record<string, string[]> = {
-      posts: ["/admin/posts", "/admin/categories", "/admin/tags"],
+      posts: ["/admin/posts", "/admin/categories", "/admin/tags", "/admin/faq"],
       media: ["/admin/media"],
       pages: ["/admin/pages"],
       courses: ["/admin/courses"],

@@ -71,6 +71,7 @@ export default function Hero() {
                     transform: isRTL ? "scaleX(-1)" : "none",
                   }}
                   viewBox="0 0 300 12"
+                  preserveAspectRatio="none"
                   fill="none"
                 >
                   <path d="M1 8 C60 3, 140 3, 299 8" stroke="#F58220" strokeWidth="3" strokeLinecap="round" opacity="0.6" />

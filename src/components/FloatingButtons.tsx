@@ -4,10 +4,17 @@ import { motion, AnimatePresence } from "framer-motion";
 
 export default function FloatingButtons() {
   const [showTop, setShowTop] = useState(false);
+  const [showConsult, setShowConsult] = useState(true);
 
   useEffect(() => {
-    const onScroll = () => setShowTop(window.scrollY > 400);
+    const onScroll = () => {
+      setShowTop(window.scrollY > 400);
+      const scrollBottom = window.scrollY + window.innerHeight;
+      const pageHeight = document.documentElement.scrollHeight;
+      setShowConsult(scrollBottom < pageHeight - 160);
+    };
     window.addEventListener("scroll", onScroll);
+    onScroll();
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
@@ -26,14 +33,21 @@ export default function FloatingButtons() {
       </a>
 
       {/* Book Consultation — bottom LEFT */}
-      <a
-        href="/consultation"
-        aria-label="Book Free Consultation"
-        className="fixed bottom-7 left-7 z-50 flex items-center gap-2 px-5 py-3 bg-[#F58220] text-white rounded-full shadow-xl shadow-orange-300/40 hover:scale-105 hover:bg-[#d9700f] transition-all duration-300 text-sm font-bold"
-      >
-        <i className="fas fa-calendar-check" />
-        <span>استشارة مجانية</span>
-      </a>
+      <AnimatePresence>
+        {showConsult && (
+          <motion.a
+            href="/consultation"
+            aria-label="Book Free Consultation"
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.5 }}
+            className="fixed bottom-7 left-7 z-50 flex items-center gap-2 px-5 py-3 bg-[#F58220] text-white rounded-full shadow-xl shadow-orange-300/40 hover:scale-105 hover:bg-[#d9700f] transition-all duration-300 text-sm font-bold"
+          >
+            <i className="fas fa-calendar-check" />
+            <span>استشارة مجانية</span>
+          </motion.a>
+        )}
+      </AnimatePresence>
 
       {/* Back to Top */}
       <AnimatePresence>

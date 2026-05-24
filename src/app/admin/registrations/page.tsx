@@ -32,7 +32,8 @@ export default function RegistrationsPage() {
   const load = useCallback(async () => {
     const res = await fetch("/api/admin/registrations", { headers: { Authorization: `Bearer ${token}` } });
     if (res.status === 401) { router.push("/admin/login"); return; }
-    setRows(await res.json());
+    const data = await res.json();
+    setRows(Array.isArray(data) ? data : (data.registrations || []));
     setLoading(false);
   }, [token]);
 

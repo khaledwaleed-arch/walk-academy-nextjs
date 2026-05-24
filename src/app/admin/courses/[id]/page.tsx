@@ -15,7 +15,7 @@ interface CourseForm {
   outcomes_en: string[]; outcomes_ar: string[];
   modules_en: Module[]; modules_ar: Module[];
   audience_en: string[]; audience_ar: string[];
-  instructor_name: string;
+  instructor_name: string; instructor_image: string;
   instructor_title_en: string; instructor_title_ar: string;
   instructor_bio_en: string; instructor_bio_ar: string;
   schedule_en: string; schedule_ar: string;
@@ -31,7 +31,7 @@ const EMPTY: CourseForm = {
   modules_en: [{ title: "", topics: [""] }],
   modules_ar: [{ title: "", topics: [""] }],
   audience_en: [""], audience_ar: [""],
-  instructor_name: "",
+  instructor_name: "", instructor_image: "",
   instructor_title_en: "", instructor_title_ar: "",
   instructor_bio_en: "", instructor_bio_ar: "",
   schedule_en: "", schedule_ar: "",
@@ -186,6 +186,7 @@ export default function CourseEditorPage() {
           audience_en: data.audience_en?.length ? data.audience_en : [""],
           audience_ar: data.audience_ar?.length ? data.audience_ar : [""],
           instructor_name: data.instructor_name || "",
+          instructor_image: data.instructor_image || "",
           instructor_title_en: data.instructor_title_en || "",
           instructor_title_ar: data.instructor_title_ar || "",
           instructor_bio_en: data.instructor_bio_en || "",
@@ -349,6 +350,29 @@ export default function CourseEditorPage() {
                 </div>
                 <Field label="Instructor Name">
                   <Input value={form.instructor_name} onChange={set("instructor_name")} placeholder="e.g. Ahmed Khaled" />
+                </Field>
+                <Field label="Instructor Photo">
+                  <div className="flex items-center gap-3">
+                    {form.instructor_image && (
+                      <img src={form.instructor_image} alt="Instructor" className="w-16 h-16 rounded-full object-cover border border-gray-200" />
+                    )}
+                    <div>
+                      <input type="file" accept="image/*" id="instructor-img-upload" className="hidden"
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          const fd = new FormData(); fd.append("file", file);
+                          const res = await fetch("/api/admin/upload", { method: "POST", headers: { Authorization: `Bearer ${token}` }, body: fd });
+                          if (res.ok) { const d = await res.json(); set("instructor_image")(d.url); }
+                        }} />
+                      <label htmlFor="instructor-img-upload" className="cursor-pointer text-xs px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded border text-gray-600 transition">
+                        <i className="fas fa-upload mr-1" /> {form.instructor_image ? "Change Photo" : "Upload Photo"}
+                      </label>
+                      {form.instructor_image && (
+                        <button type="button" onClick={() => set("instructor_image")("")} className="ml-2 text-xs text-red-500 hover:text-red-700">Remove</button>
+                      )}
+                    </div>
+                  </div>
                 </Field>
                 <div className="grid grid-cols-2 gap-4" dir={ar ? "rtl" : "ltr"}>
                   <Field label={ar ? "المسمى الوظيفي" : "Title / Role"}>

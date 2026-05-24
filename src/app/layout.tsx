@@ -41,6 +41,13 @@ export const metadata: Metadata = {
       "Integrated professional services: accounting, Walk Academy training, management consulting, audit & Odoo ERP.",
     images: ["https://www.walk-business.com/assets/images/logo.png"],
   },
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.png", type: "image/png", sizes: "512x512" },
+    ],
+    apple: "/icon.png",
+  },
   robots: { index: true, follow: true },
   alternates: { canonical: "https://www.walk-business.com/" },
 };

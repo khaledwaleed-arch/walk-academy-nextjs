@@ -9,7 +9,7 @@ const socials = [
   { icon: "fa-linkedin-in", href: "https://www.linkedin.com/company/walk-academy/",         label: "LinkedIn",  hoverColor: "hover:bg-[#0077b5]" },
   { icon: "fa-youtube",     href: "https://www.youtube.com/@Walk-Academy",                  label: "YouTube",   hoverColor: "hover:bg-[#FF0000]" },
   { icon: "fa-tiktok",      href: "https://www.tiktok.com/@walkacademy",                    label: "TikTok",    hoverColor: "hover:bg-[#010101]" },
-  { icon: "fa-whatsapp",    href: "https://wa.me/201143706993",                             label: "WhatsApp",  hoverColor: "hover:bg-[#25D366]" },
+  { icon: "fa-whatsapp",    href: "https://wa.me/201038606565",                             label: "WhatsApp",  hoverColor: "hover:bg-[#25D366]" },
 ];
 
 type Status = "idle" | "sending" | "ok" | "err";
@@ -55,7 +55,7 @@ export default function Contact() {
           <AnimatedSection direction="left" className="lg:col-span-2 space-y-6">
             {[
               { icon: "fa-map-marker-alt", titleKey: "contact.address", value: "152 st King Faisal, Giza, Egypt" },
-              { icon: "fa-phone",          titleKey: "contact.phone_label", value: "+20 114 370 6993", href: "tel:+201143706993" },
+              { icon: "fa-phone",          titleKey: "contact.phone_label", value: "+20 103 860 6565", href: "tel:+201038606565" },
               { icon: "fa-envelope",       titleKey: "contact.email_label", value: "info@walk-business.com", href: "mailto:info@walk-business.com" },
             ].map((item) => (
               <div key={item.titleKey} className="flex items-start gap-4 bg-white rounded-2xl p-5 shadow-sm">
@@ -65,9 +65,9 @@ export default function Contact() {
                 <div>
                   <div className="text-[#0D3B5C] font-semibold text-sm">{t(item.titleKey)}</div>
                   {item.href ? (
-                    <a href={item.href} className="text-gray-600 text-sm hover:text-[#F58220] transition-colors">{item.value}</a>
+                    <a href={item.href} className="text-gray-600 text-sm hover:text-[#F58220] transition-colors" dir="ltr">{item.value}</a>
                   ) : (
-                    <div className="text-gray-600 text-sm">{item.value}</div>
+                    <div className="text-gray-600 text-sm" dir="ltr">{item.value}</div>
                   )}
                 </div>
               </div>
@@ -94,9 +94,9 @@ export default function Contact() {
                   <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
                     <i className="fas fa-check text-green-500 text-2xl" />
                   </div>
-                  <h3 className="text-xl font-bold text-[#0D3B5C]">Message sent!</h3>
-                  <p className="text-gray-500 text-sm">We&apos;ll get back to you within 24 hours.</p>
-                  <button onClick={() => setStatus("idle")} className="mt-2 px-6 py-2 bg-[#F58220] text-white rounded-full text-sm font-semibold">Send another</button>
+                  <h3 className="text-xl font-bold text-[#0D3B5C]">{t("contact.success_title")}</h3>
+                  <p className="text-gray-500 text-sm">{t("contact.success_desc")}</p>
+                  <button onClick={() => setStatus("idle")} className="mt-2 px-6 py-2 bg-[#F58220] text-white rounded-full text-sm font-semibold">{t("contact.send_another")}</button>
                 </div>
               ) : (
                 <form className="space-y-5" onSubmit={handleSubmit}>
@@ -130,13 +130,13 @@ export default function Contact() {
                       className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-sm focus:border-[#0D3B5C] focus:outline-none bg-gray-50 focus:bg-white transition-all resize-none" />
                   </div>
                   {status === "err" && (
-                    <p className="text-red-500 text-sm text-center">Something went wrong. Please try again.</p>
+                    <p className="text-red-500 text-sm text-center">{t("contact.error_msg")}</p>
                   )}
                   <button type="submit" disabled={status === "sending"}
                     className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-[#F58220] text-white font-bold rounded-xl hover:bg-[#d9700f] hover:shadow-lg hover:shadow-orange-400/30 hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
                   >
                     <i className={`fas ${status === "sending" ? "fa-spinner fa-spin" : "fa-paper-plane"}`} />
-                    {status === "sending" ? "Sending..." : t("contact.send")}
+                    {status === "sending" ? t("contact.sending") : t("contact.send")}
                   </button>
                 </form>
               )}

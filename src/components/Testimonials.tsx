@@ -3,9 +3,9 @@ import { AnimatedSection, StaggerGrid, StaggerItem } from "./AnimatedSection";
 import { useI18n } from "@/lib/i18n";
 
 const TESTIMONIALS = [
-  { key: "t1", avatar: "A", gradient: "from-[#0D3B5C] to-[#1a5a8a]" },
-  { key: "t2", avatar: "S", gradient: "from-[#F58220] to-[#d9700f]" },
-  { key: "t3", avatar: "M", gradient: "from-[#1a5a8a] to-[#0D3B5C]" },
+  { key: "t1", gradient: "from-[#0D3B5C] to-[#1a5a8a]" },
+  { key: "t2", gradient: "from-[#F58220] to-[#d9700f]" },
+  { key: "t3", gradient: "from-[#1a5a8a] to-[#0D3B5C]" },
 ];
 
 export default function Testimonials() {
@@ -36,7 +36,7 @@ export default function Testimonials() {
                 </div>
                 <div className="flex items-center gap-3">
                   <div className={`w-11 h-11 rounded-full bg-gradient-to-br ${item.gradient} flex items-center justify-center text-white font-bold text-lg shrink-0`}>
-                    {item.avatar}
+                    {t(`testimonials.${item.key}_name`)[0]}
                   </div>
                   <div>
                     <div className="font-bold text-[#0D3B5C] text-sm">{t(`testimonials.${item.key}_name`)}</div>

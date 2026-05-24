@@ -13,7 +13,7 @@ interface CourseRow {
   outcomes_en: string[]; outcomes_ar: string[];
   modules_en: Module[]; modules_ar: Module[];
   audience_en: string[]; audience_ar: string[];
-  instructor_name: string;
+  instructor_name: string; instructor_image: string;
   instructor_title_en: string; instructor_title_ar: string;
   instructor_bio_en: string; instructor_bio_ar: string;
   schedule_en: string; schedule_ar: string;
@@ -66,7 +66,7 @@ export default function CourseDetail({
       {/* Hero */}
       <header className="bg-gradient-to-br from-[#0D3B5C] to-[#1a5a8a] text-white py-16 px-6">
         <div className="max-w-4xl mx-auto">
-          <div className={`flex flex-wrap items-center gap-3 mb-4 ${isAr ? "flex-row-reverse" : ""}`}>
+          <div className={`flex flex-wrap items-center gap-3 mb-4`}>
             <span className="px-3 py-1 rounded-full bg-white/10 text-white text-xs font-semibold">
               <i className={`fas fa-clock ${isAr ? "ml-1" : "mr-1"}`} />{duration}
             </span>
@@ -93,7 +93,7 @@ export default function CourseDetail({
               {isAr ? "الرسوم الكاملة للبرنامج · شاملة الشهادة" : "Full programme fee · Includes certificate"}
             </div>
           </div>
-          <div className={`flex gap-3 ${isAr ? "flex-row-reverse" : ""}`}>
+          <div className={`flex gap-3`}>
             <Link href="/#register"
               className="inline-flex items-center gap-2 px-8 py-4 bg-[#F58220] text-white font-bold rounded-2xl hover:bg-[#d9700f] transition-all hover:scale-105 shadow-lg shadow-orange-200 text-lg">
               <i className="fas fa-graduation-cap" />
@@ -108,7 +108,7 @@ export default function CourseDetail({
 
         {/* Description */}
         <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
-          <h2 className={`text-[#0D3B5C] font-bold text-lg mb-3 flex items-center gap-2 ${isAr ? "flex-row-reverse" : ""}`}>
+          <h2 className={`text-[#0D3B5C] font-bold text-lg mb-3 flex items-center gap-2`}>
             <i className="fas fa-info-circle text-[#F58220]" />
             {isAr ? "عن هذه الدورة" : "About this course"}
           </h2>
@@ -118,13 +118,13 @@ export default function CourseDetail({
         {/* Learning outcomes */}
         {outcomes.length > 0 && (
           <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
-            <h2 className={`text-[#0D3B5C] font-bold text-xl mb-6 flex items-center gap-2 ${isAr ? "flex-row-reverse" : ""}`}>
+            <h2 className={`text-[#0D3B5C] font-bold text-xl mb-6 flex items-center gap-2`}>
               <i className="fas fa-bullseye text-[#F58220]" />
               {isAr ? "ما الذي ستتعلمه" : "What you'll learn"}
             </h2>
             <div className="grid md:grid-cols-2 gap-3">
               {outcomes.map((o, i) => (
-                <div key={i} className={`flex items-start gap-3 ${isAr ? "flex-row-reverse text-right" : ""}`}>
+                <div key={i} className={`flex items-start gap-3 ${isAr ? "text-right" : ""}`}>
                   <div className="mt-0.5 w-5 h-5 rounded-full bg-[#F58220]/10 flex items-center justify-center flex-shrink-0">
                     <i className="fas fa-check text-[#F58220] text-xs" />
                   </div>
@@ -138,15 +138,15 @@ export default function CourseDetail({
         {/* Curriculum */}
         {modules.length > 0 && (
           <div>
-            <h2 className={`text-[#0D3B5C] font-bold text-xl mb-6 flex items-center gap-2 ${isAr ? "flex-row-reverse" : ""}`}>
+            <h2 className={`text-[#0D3B5C] font-bold text-xl mb-6 flex items-center gap-2`}>
               <i className="fas fa-list-ol text-[#F58220]" />
               {isAr ? "محتوى الدورة" : "Course Curriculum"}
             </h2>
             <div className="space-y-4">
               {modules.map((mod, i) => (
                 <details key={i} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden group" open={i === 0}>
-                  <summary className={`flex items-center justify-between px-6 py-4 cursor-pointer list-none hover:bg-gray-50 transition-colors ${isAr ? "flex-row-reverse" : ""}`}>
-                    <span className={`font-semibold text-[#0D3B5C] flex items-center gap-3 ${isAr ? "flex-row-reverse" : ""}`}>
+                  <summary className={`flex items-center justify-between px-6 py-4 cursor-pointer list-none hover:bg-gray-50 transition-colors`}>
+                    <span className={`font-semibold text-[#0D3B5C] flex items-center gap-3`}>
                       <span className="w-7 h-7 rounded-full bg-[#0D3B5C] text-white text-xs flex items-center justify-center font-bold flex-shrink-0">{i + 1}</span>
                       {mod.title}
                     </span>
@@ -155,7 +155,7 @@ export default function CourseDetail({
                   <div className="px-6 pb-5 border-t border-gray-50">
                     <ul className={`mt-4 space-y-2 ${isAr ? "text-right" : ""}`}>
                       {(mod.topics ?? []).filter(t => t?.trim()).map((topic, j) => (
-                        <li key={j} className={`flex items-center gap-3 text-gray-600 text-sm ${isAr ? "flex-row-reverse" : ""}`}>
+                        <li key={j} className={`flex items-center gap-3 text-gray-600 text-sm`}>
                           <i className="fas fa-play-circle text-[#F58220] text-xs flex-shrink-0" />{topic}
                         </li>
                       ))}
@@ -170,13 +170,13 @@ export default function CourseDetail({
         {/* Audience */}
         {audience.length > 0 && (
           <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
-            <h2 className={`text-[#0D3B5C] font-bold text-xl mb-6 flex items-center gap-2 ${isAr ? "flex-row-reverse" : ""}`}>
+            <h2 className={`text-[#0D3B5C] font-bold text-xl mb-6 flex items-center gap-2`}>
               <i className="fas fa-users text-[#F58220]" />
               {isAr ? "لمن هذه الدورة؟" : "Who is this course for?"}
             </h2>
             <ul className="space-y-3">
               {audience.map((a, i) => (
-                <li key={i} className={`flex items-start gap-3 text-gray-700 text-sm ${isAr ? "flex-row-reverse text-right" : ""}`}>
+                <li key={i} className={`flex items-start gap-3 text-gray-700 text-sm ${isAr ? "text-right" : ""}`}>
                   <i className="fas fa-user-check text-[#F58220] mt-0.5 flex-shrink-0" />{a}
                 </li>
               ))}
@@ -187,14 +187,19 @@ export default function CourseDetail({
         {/* Instructor */}
         {course.instructor_name && (
           <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
-            <h2 className={`text-[#0D3B5C] font-bold text-xl mb-6 flex items-center gap-2 ${isAr ? "flex-row-reverse" : ""}`}>
+            <h2 className={`text-[#0D3B5C] font-bold text-xl mb-6 flex items-center gap-2`}>
               <i className="fas fa-user-tie text-[#F58220]" />
               {isAr ? "المدرّب" : "Your Instructor"}
             </h2>
-            <div className={`flex items-start gap-5 ${isAr ? "flex-row-reverse" : ""}`}>
-              <div className="w-16 h-16 rounded-2xl bg-[#0D3B5C] flex items-center justify-center flex-shrink-0">
-                <i className="fas fa-user text-white text-2xl" />
-              </div>
+            <div className={`flex items-start gap-5`}>
+              {course.instructor_image ? (
+                <img src={course.instructor_image} alt={course.instructor_name}
+                  className="w-16 h-16 rounded-2xl object-cover flex-shrink-0 border border-gray-100" />
+              ) : (
+                <div className="w-16 h-16 rounded-2xl bg-[#0D3B5C] flex items-center justify-center flex-shrink-0">
+                  <i className="fas fa-user text-white text-2xl" />
+                </div>
+              )}
               <div className="flex-1">
                 <p className="font-bold text-[#0D3B5C] text-lg">{course.instructor_name}</p>
                 {instrTitle && <p className="text-[#F58220] text-sm font-medium mt-0.5">{instrTitle}</p>}
@@ -207,13 +212,13 @@ export default function CourseDetail({
         {/* Schedule */}
         {(startDate || schedule) && (
           <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
-            <h2 className={`text-[#0D3B5C] font-bold text-xl mb-6 flex items-center gap-2 ${isAr ? "flex-row-reverse" : ""}`}>
+            <h2 className={`text-[#0D3B5C] font-bold text-xl mb-6 flex items-center gap-2`}>
               <i className="fas fa-calendar-alt text-[#F58220]" />
               {isAr ? "الجدول الزمني" : "Schedule & Timetable"}
             </h2>
             <div className="grid md:grid-cols-3 gap-4 mb-5">
               {startDate && (
-                <div className={`flex items-center gap-3 bg-[#F5F5F5] rounded-2xl px-5 py-4 ${isAr ? "flex-row-reverse" : ""}`}>
+                <div className={`flex items-center gap-3 bg-[#F5F5F5] rounded-2xl px-5 py-4`}>
                   <i className="fas fa-calendar-check text-[#F58220] text-xl" />
                   <div className={isAr ? "text-right" : ""}>
                     <div className="text-xs text-gray-400 font-medium">{isAr ? "تاريخ البدء" : "Start Date"}</div>
@@ -222,7 +227,7 @@ export default function CourseDetail({
                 </div>
               )}
               {duration && (
-                <div className={`flex items-center gap-3 bg-[#F5F5F5] rounded-2xl px-5 py-4 ${isAr ? "flex-row-reverse" : ""}`}>
+                <div className={`flex items-center gap-3 bg-[#F5F5F5] rounded-2xl px-5 py-4`}>
                   <i className="fas fa-clock text-[#F58220] text-xl" />
                   <div className={isAr ? "text-right" : ""}>
                     <div className="text-xs text-gray-400 font-medium">{isAr ? "المدة" : "Duration"}</div>
@@ -231,7 +236,7 @@ export default function CourseDetail({
                 </div>
               )}
               {location && (
-                <div className={`flex items-center gap-3 bg-[#F5F5F5] rounded-2xl px-5 py-4 ${isAr ? "flex-row-reverse" : ""}`}>
+                <div className={`flex items-center gap-3 bg-[#F5F5F5] rounded-2xl px-5 py-4`}>
                   <i className="fas fa-map-marker-alt text-[#F58220] text-xl" />
                   <div className={isAr ? "text-right" : ""}>
                     <div className="text-xs text-gray-400 font-medium">{isAr ? "المكان" : "Location"}</div>

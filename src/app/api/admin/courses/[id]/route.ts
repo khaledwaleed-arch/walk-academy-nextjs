@@ -13,7 +13,7 @@ const COURSE_FIELDS: AllowedFields = {
   duration_en: 'text', duration_ar: 'text', price: 'text', status: 'text',
   featured_image: 'text',
   instructor_name: 'text', instructor_title_en: 'text', instructor_title_ar: 'text',
-  instructor_bio_en: 'text', instructor_bio_ar: 'text',
+  instructor_bio_en: 'text', instructor_bio_ar: 'text', instructor_image: 'text',
   schedule_en: 'text', schedule_ar: 'text', start_date_en: 'text', start_date_ar: 'text',
   location_en: 'text', location_ar: 'text',
   sort_order: 'int',

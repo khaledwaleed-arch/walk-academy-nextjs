@@ -12,7 +12,7 @@ interface YTVideo {
 }
 
 export default function YouTubeFeed() {
-  const { lang, isRTL } = useI18n();
+  const { t, isRTL } = useI18n();
   const [videos, setVideos] = useState<YTVideo[]>([]);
 
   useEffect(() => {
@@ -22,27 +22,15 @@ export default function YouTubeFeed() {
       .catch(() => {});
   }, []);
 
-  const txt = {
-    badge:    lang === "ar" ? "Walk Academy على يوتيوب"     : "Walk Academy on YouTube",
-    title:    lang === "ar" ? "محتوى تعليمي مجاني"          : "Free Educational Content",
-    subtitle: lang === "ar" ? "دروس وشروحات مجانية في المحاسبة، Odoo ERP، والتحليل المالي"
-                            : "Free lessons and tutorials on accounting, Odoo ERP, and financial analysis",
-    soon:     lang === "ar" ? "قادم قريباً"                  : "Coming Soon",
-    soonDesc: lang === "ar" ? "نعمل على تحضير محتوى تعليمي مميز. اشترك الآن لتصلك الإشعارات فور النشر."
-                            : "We're preparing premium educational content. Subscribe now to get notified when we publish.",
-    subscribe: lang === "ar" ? "اشترك في القناة"             : "Subscribe to the Channel",
-    more:      lang === "ar" ? "شاهد المزيد على يوتيوب"      : "Watch More on YouTube",
-  };
-
   return (
     <section id="youtube" className="py-24 bg-gray-50" dir={isRTL ? "rtl" : "ltr"}>
       <div className="max-w-7xl mx-auto px-6">
         <AnimatedSection className="text-center mb-16">
           <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-50 border border-red-200 text-red-600 text-sm font-semibold mb-4">
-            <i className="fab fa-youtube" /> {txt.badge}
+            <i className="fab fa-youtube" /> {t("youtube.badge")}
           </span>
-          <h2 className="text-3xl lg:text-5xl font-bold text-[#0D3B5C] mt-2 mb-4">{txt.title}</h2>
-          <p className="text-lg text-gray-500 max-w-xl mx-auto">{txt.subtitle}</p>
+          <h2 className="text-3xl lg:text-5xl font-bold text-[#0D3B5C] mt-2 mb-4">{t("youtube.title")}</h2>
+          <p className="text-lg text-gray-500 max-w-xl mx-auto">{t("youtube.subtitle")}</p>
         </AnimatedSection>
 
         {videos.length === 0 ? (
@@ -50,14 +38,14 @@ export default function YouTubeFeed() {
             <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-red-100 mb-6">
               <i className="fab fa-youtube text-4xl text-red-500" />
             </div>
-            <h3 className="text-2xl font-bold text-[#0D3B5C] mb-3">{txt.soon}</h3>
-            <p className="text-gray-500 mb-8 max-w-md mx-auto">{txt.soonDesc}</p>
+            <h3 className="text-2xl font-bold text-[#0D3B5C] mb-3">{t("youtube.soon")}</h3>
+            <p className="text-gray-500 mb-8 max-w-md mx-auto">{t("youtube.soon_desc")}</p>
             <a
               href="https://www.youtube.com/@Walk-Academy?sub_confirmation=1"
               target="_blank" rel="noopener noreferrer"
               className="inline-flex items-center gap-3 px-8 py-4 rounded-2xl bg-red-600 hover:bg-red-700 text-white font-bold text-lg transition-all hover:scale-105 shadow-lg hover:shadow-red-200"
             >
-              <i className="fab fa-youtube text-2xl" /> {txt.subscribe}
+              <i className="fab fa-youtube text-2xl" /> {t("youtube.subscribe")}
             </a>
           </AnimatedSection>
         ) : (
@@ -72,7 +60,7 @@ export default function YouTubeFeed() {
                       <img src={v.thumbnail} alt={v.title} className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500" />
                       <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors flex items-center justify-center">
                         <div className="w-14 h-14 rounded-full bg-red-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                          <i className="fas fa-play text-white text-lg ml-1" />
+                          <i className="fas fa-play text-white text-lg ms-1" />
                         </div>
                       </div>
                     </div>
@@ -92,7 +80,7 @@ export default function YouTubeFeed() {
               <a href="https://www.youtube.com/@Walk-Academy?sub_confirmation=1"
                 target="_blank" rel="noopener noreferrer"
                 className="inline-flex items-center gap-3 px-8 py-4 rounded-2xl bg-red-600 hover:bg-red-700 text-white font-bold text-lg transition-all hover:scale-105 shadow-lg hover:shadow-red-200">
-                <i className="fab fa-youtube text-2xl" /> {txt.more}
+                <i className="fab fa-youtube text-2xl" /> {t("youtube.more")}
               </a>
             </AnimatedSection>
           </>

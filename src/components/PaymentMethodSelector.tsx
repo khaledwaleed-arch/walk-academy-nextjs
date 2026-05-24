@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import { useI18n } from "@/lib/i18n";
 
 export type PaymentMethod = "instapay" | "wallet" | "";
 
@@ -9,12 +10,15 @@ interface Props {
 }
 
 const INSTAPAY_LINK = "https://ipn.eg/S/khaledwaledd/instapay/6Lok2a";
+const WALLET_NUMBER = "+201038606565";
 
 export default function PaymentMethodSelector({ value, onChange }: Props) {
+  const { t } = useI18n();
+
   return (
     <div className="space-y-3">
       <label className="block text-sm font-semibold text-[#0D3B5C] mb-1">
-        Payment Method *
+        {t("register.payment_label")} *
       </label>
 
       {/* InstaPay option */}
@@ -22,7 +26,6 @@ export default function PaymentMethodSelector({ value, onChange }: Props) {
         className={`flex flex-col gap-0 rounded-2xl border-2 cursor-pointer transition-all duration-200 overflow-hidden
           ${value === "instapay" ? "border-[#3d1a6e] bg-[#f5f0ff]" : "border-gray-200 bg-gray-50 hover:border-gray-300"}`}
       >
-        {/* Radio row */}
         <div className="flex items-center gap-3 px-4 py-3.5">
           <input
             type="radio"
@@ -36,11 +39,10 @@ export default function PaymentMethodSelector({ value, onChange }: Props) {
           <Image src="/instapay-logo.png" alt="InstaPay" width={28} height={28} className="rounded-md" />
           <div className="flex-1">
             <span className="font-semibold text-sm text-[#3d1a6e]">InstaPay</span>
-            <span className="text-gray-400 text-xs ml-2">Bank transfer via InstaPay Egypt</span>
+            <span className="text-gray-400 text-xs ms-2">{t("register.instapay_desc")}</span>
           </div>
         </div>
 
-        {/* Expanded details */}
         {value === "instapay" && (
           <div className="border-t-2 border-[#3d1a6e]/20 px-4 py-4 bg-white flex flex-col sm:flex-row items-center gap-5">
             <Image
@@ -50,17 +52,17 @@ export default function PaymentMethodSelector({ value, onChange }: Props) {
               height={110}
               className="rounded-xl border border-[#3d1a6e]/20 flex-shrink-0"
             />
-            <div className="flex flex-col gap-2 text-center sm:text-left">
-              <p className="text-xs text-gray-500">Scan the QR code with your bank app, or send directly to:</p>
-              <p className="font-bold text-[#3d1a6e] text-base tracking-wide">khaledwaledd@instapay</p>
+            <div className="flex flex-col gap-2 text-center sm:text-start">
+              <p className="text-xs text-gray-500">{t("register.instapay_scan")}</p>
+              <p className="font-bold text-[#3d1a6e] text-base tracking-wide" dir="ltr">khaledwaledd@instapay</p>
               <a
                 href={INSTAPAY_LINK}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="inline-flex items-center justify-center gap-2 px-5 py-2 bg-[#3d1a6e] text-white text-sm font-semibold rounded-full hover:bg-[#2d1254] transition-colors w-fit mx-auto sm:mx-0"
+                className="inline-flex items-center justify-center gap-2 px-5 py-2 bg-[#3d1a6e] text-white text-sm font-semibold rounded-full hover:bg-[#2d1254] transition-colors w-fit mx-auto sm:ms-0"
               >
-                <i className="fas fa-external-link-alt text-xs" /> Open InstaPay Link
+                <i className="fas fa-external-link-alt text-xs" /> {t("register.instapay_open_link")}
               </a>
             </div>
           </div>
@@ -72,7 +74,6 @@ export default function PaymentMethodSelector({ value, onChange }: Props) {
         className={`flex flex-col gap-0 rounded-2xl border-2 cursor-pointer transition-all duration-200 overflow-hidden
           ${value === "wallet" ? "border-[#C8102E] bg-[#fff5f5]" : "border-gray-200 bg-gray-50 hover:border-gray-300"}`}
       >
-        {/* Radio row */}
         <div className="flex items-center gap-3 px-4 py-3.5">
           <input
             type="radio"
@@ -85,12 +86,11 @@ export default function PaymentMethodSelector({ value, onChange }: Props) {
           />
           <Image src="/ewallet-logo.png" alt="Mobile Wallet" width={28} height={28} className="rounded-md" />
           <div className="flex-1">
-            <span className="font-semibold text-sm text-[#C8102E]">Mobile Wallet</span>
-            <span className="text-gray-400 text-xs ml-2">e& Cash / Fawry wallet transfer</span>
+            <span className="font-semibold text-sm text-[#C8102E]">{t("register.wallet_title")}</span>
+            <span className="text-gray-400 text-xs ms-2">{t("register.wallet_desc")}</span>
           </div>
         </div>
 
-        {/* Expanded details */}
         {value === "wallet" && (
           <div className="border-t-2 border-[#C8102E]/20 px-4 py-4 bg-white flex flex-col sm:flex-row items-center gap-5">
             <Image
@@ -100,10 +100,10 @@ export default function PaymentMethodSelector({ value, onChange }: Props) {
               height={110}
               className="rounded-xl border border-[#C8102E]/20 flex-shrink-0"
             />
-            <div className="flex flex-col gap-2 text-center sm:text-left">
-              <p className="text-xs text-gray-500">Scan the QR code with your wallet app, or send directly to:</p>
-              <p className="font-bold text-[#C8102E] text-xl tracking-widest">011 4370 6993</p>
-              <p className="text-xs text-gray-400">After sending, keep your transfer receipt</p>
+            <div className="flex flex-col gap-2 text-center sm:text-start">
+              <p className="text-xs text-gray-500">{t("register.wallet_scan")}</p>
+              <p className="font-bold text-[#C8102E] text-xl tracking-widest" dir="ltr">{WALLET_NUMBER}</p>
+              <p className="text-xs text-gray-400">{t("register.wallet_after")}</p>
             </div>
           </div>
         )}

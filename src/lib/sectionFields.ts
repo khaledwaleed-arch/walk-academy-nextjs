@@ -134,4 +134,13 @@ export const SECTION_FIELDS: Record<string, SectionField[]> = {
     { key: "faq.title",   label: "Title",   type: "text" },
     { key: "faq.subtitle",label: "Subtitle",type: "text" },
   ],
+  youtube: [
+    { key: "youtube.badge",    label: "Badge",              type: "text" },
+    { key: "youtube.title",    label: "Title",              type: "text" },
+    { key: "youtube.subtitle", label: "Subtitle",           type: "textarea" },
+    { key: "youtube.soon",     label: "Empty State Heading",type: "text" },
+    { key: "youtube.soon_desc",label: "Empty State Text",   type: "textarea" },
+    { key: "youtube.subscribe",label: "Subscribe Button",   type: "text" },
+    { key: "youtube.more",     label: "Watch More Button",  type: "text" },
+  ],
 };
