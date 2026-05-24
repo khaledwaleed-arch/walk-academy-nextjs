@@ -49,8 +49,9 @@
 
 @layer base {
   * { @apply border-border; }
-  body { @apply bg-background text-foreground; }
+  body { @apply bg-background text-foreground; overflow-x: hidden; }
   html { scroll-behavior: smooth; overflow-x: hidden; }
+  img, video { max-width: 100%; height: auto; }
 }
 
 /* Custom scrollbar */

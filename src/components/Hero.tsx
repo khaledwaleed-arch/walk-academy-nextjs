@@ -60,14 +60,14 @@ export default function Hero() {
               className="text-4xl lg:text-6xl font-black leading-tight mb-6"
             >
               {t("hero.title1")}{" "}
-              <span className="text-[#F58220] relative whitespace-nowrap">
+              <span className="text-[#F58220] relative whitespace-nowrap inline-block">
                 {t("hero.title_accent")}
                 <svg
                   className="absolute w-full pointer-events-none"
                   style={{
-                    bottom: "-10px",
-                    left: isRTL ? "auto" : 0,
-                    right: isRTL ? 0 : "auto",
+                    bottom: "-8px",
+                    left: 0,
+                    height: "12px",
                     transform: isRTL ? "scaleX(-1)" : "none",
                   }}
                   viewBox="0 0 300 12"
