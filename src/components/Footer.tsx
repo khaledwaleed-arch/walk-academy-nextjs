@@ -58,7 +58,7 @@ export default function Footer() {
                 alt="Walk Business"
                 width={160}
                 height={48}
-                className="h-12 w-auto object-contain brightness-0 invert"
+                className="h-12 w-auto object-contain brightness-0 invert animate-logo-pulse"
               />
             </div>
             <p className="text-sm leading-relaxed mb-6">{t("footer.desc")}</p>

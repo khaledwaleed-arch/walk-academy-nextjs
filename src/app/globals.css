@@ -90,3 +90,9 @@
 .animate-pulse-glow   { animation: pulse-glow 2.5s ease-in-out infinite; }
 .animate-gradient     { background-size: 200% 200%; animation: gradient-shift 8s ease infinite; }
 .animate-spin-slow    { animation: spin-slow 20s linear infinite; }
+
+@keyframes logo-pulse-glow {
+  0%, 100% { filter: brightness(0) invert(1) drop-shadow(0 0 0px #F58220); }
+  50%       { filter: brightness(0) invert(1) drop-shadow(0 0 12px #F58220) drop-shadow(0 0 24px rgba(245,130,32,0.4)); }
+}
+.animate-logo-pulse { animation: logo-pulse-glow 2.5s ease-in-out infinite; }

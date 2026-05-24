@@ -64,7 +64,7 @@ export default function Navbar() {
               alt="Walk Business"
               width={188}
               height={55}
-              className="h-14 w-auto object-contain brightness-0 invert"
+              className="h-14 w-auto object-contain brightness-0 invert animate-logo-pulse"
               priority
             />
           </div>
