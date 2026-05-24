@@ -126,7 +126,7 @@ export default function RichEditor({ value, onChange, onImageInsert, placeholder
     if (editor && value !== editor.getHTML()) {
       editor.commands.setContent(value);
     }
-  }, [value]);
+  }, [value, editor]);
 
   const insertImage = useCallback((url: string) => {
     editor?.chain().focus().setImage({ src: url }).run();
