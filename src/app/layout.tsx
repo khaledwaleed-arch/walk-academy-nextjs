@@ -17,12 +17,14 @@ const cairo = Cairo({
   display: "swap",
 });
 
+const OG_IMAGE = "https://www.walk-business.com/og-image.png";
+
 export const metadata: Metadata = {
   title: "Walk Business | محاسبة · تدريب · استشارات · تدقيق · Odoo ERP",
   description:
     "Walk Business — شريكك المتكامل للأعمال. خدمات المحاسبة والتدريب الاحترافي (Walk Academy) والاستشارات الإدارية والتدقيق وتطبيق Odoo ERP. Walk Business — Your complete partner for accounting, training, consulting, audit & Odoo ERP.",
   keywords:
-    "walk business, walk academy, accounting egypt, odoo erp, audit consulting, محاسبة, أكاديمية محاسبة, walk-business.com",
+    "walk business, walk academy, accounting egypt, odoo erp, audit consulting, محاسبة, أكاديمية محاسبة, تدريب محاسبة, استشارات مالية, walk-business.com",
   authors: [{ name: "Walk Business" }],
   openGraph: {
     type: "website",
@@ -31,7 +33,7 @@ export const metadata: Metadata = {
     description:
       "Integrated professional services: accounting, Walk Academy training, management consulting, audit & Odoo ERP implementation.",
     url: "https://www.walk-business.com/",
-    images: [{ url: "https://www.walk-business.com/assets/images/logo.png" }],
+    images: [{ url: OG_IMAGE, width: 1200, height: 630, alt: "Walk Business" }],
     locale: "ar_EG",
   },
   twitter: {
@@ -39,7 +41,7 @@ export const metadata: Metadata = {
     title: "Walk Business — Your Complete Growth Partner",
     description:
       "Integrated professional services: accounting, Walk Academy training, management consulting, audit & Odoo ERP.",
-    images: ["https://www.walk-business.com/assets/images/logo.png"],
+    images: [OG_IMAGE],
   },
   icons: {
     icon: [
@@ -49,7 +51,15 @@ export const metadata: Metadata = {
     apple: "/icon.png",
   },
   robots: { index: true, follow: true },
-  alternates: { canonical: "https://www.walk-business.com/" },
+  alternates: {
+    canonical: "https://www.walk-business.com/",
+    languages: {
+      "ar": "https://www.walk-business.com/",
+      "en": "https://www.walk-business.com/",
+      "fr": "https://www.walk-business.com/",
+      "x-default": "https://www.walk-business.com/",
+    },
+  },
 };
 
 export default async function RootLayout({
@@ -73,6 +83,11 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        {/* hreflang — multilingual site (AR/EN/FR same URL, language is client-selected) */}
+        <link rel="alternate" hrefLang="ar" href="https://www.walk-business.com/" />
+        <link rel="alternate" hrefLang="en" href="https://www.walk-business.com/" />
+        <link rel="alternate" hrefLang="fr" href="https://www.walk-business.com/" />
+        <link rel="alternate" hrefLang="x-default" href="https://www.walk-business.com/" />
         <link
           rel="preconnect"
           href="https://cdnjs.cloudflare.com"
@@ -87,12 +102,27 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
-              "@type": "ProfessionalService",
+              "@type": ["ProfessionalService", "EducationalOrganization"],
               name: "Walk Business",
+              alternateName: "Walk Academy",
               url: "https://www.walk-business.com",
               logo: "https://www.walk-business.com/logo.png",
+              image: "https://www.walk-business.com/og-image.png",
               description:
                 "Integrated professional services: accounting, professional training (Walk Academy), management consulting, audit & Odoo ERP implementation.",
+              telephone: "+201038606565",
+              email: "info@walk-business.com",
+              address: {
+                "@type": "PostalAddress",
+                addressCountry: "EG",
+              },
+              priceRange: "$$",
+              aggregateRating: {
+                "@type": "AggregateRating",
+                ratingValue: "4.9",
+                reviewCount: "200",
+                bestRating: "5",
+              },
               sameAs: [
                 "https://www.facebook.com/share/1FWUU3yLs7/",
                 "https://www.instagram.com/walk.academy",
@@ -100,6 +130,11 @@ export default async function RootLayout({
                 "https://www.youtube.com/@Walk-Academy",
                 "https://www.tiktok.com/@walkacademy",
               ],
+              hasOfferCatalog: {
+                "@type": "OfferCatalog",
+                name: "Walk Academy Courses",
+                url: "https://www.walk-business.com/courses",
+              },
             }),
           }}
         />
