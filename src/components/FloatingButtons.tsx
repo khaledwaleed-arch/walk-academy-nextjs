@@ -5,13 +5,16 @@ import { motion, AnimatePresence } from "framer-motion";
 export default function FloatingButtons() {
   const [showTop, setShowTop] = useState(false);
   const [showConsult, setShowConsult] = useState(true);
+  const [showWhatsApp, setShowWhatsApp] = useState(true);
 
   useEffect(() => {
     const onScroll = () => {
       setShowTop(window.scrollY > 400);
       const scrollBottom = window.scrollY + window.innerHeight;
       const pageHeight = document.documentElement.scrollHeight;
-      setShowConsult(scrollBottom < pageHeight - 160);
+      const nearBottom = scrollBottom >= pageHeight - 240;
+      setShowConsult(!nearBottom);
+      setShowWhatsApp(!nearBottom);
     };
     window.addEventListener("scroll", onScroll);
     onScroll();
@@ -21,16 +24,23 @@ export default function FloatingButtons() {
   return (
     <>
       {/* WhatsApp */}
-      <a
-        href="https://wa.me/201038606565"
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="WhatsApp"
-        className="fixed bottom-7 right-7 z-50 w-14 h-14 bg-[#25D366] text-white rounded-full flex items-center justify-center text-2xl shadow-2xl shadow-green-500/40 hover:scale-110 hover:bg-[#1ebe5d] transition-all duration-300"
-        style={{ animation: "pulse-glow-wa 2.5s ease-in-out infinite" }}
-      >
-        <i className="fab fa-whatsapp" />
-      </a>
+      <AnimatePresence>
+        {showWhatsApp && (
+          <motion.a
+            href="https://wa.me/201038606565"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="WhatsApp"
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.5 }}
+            className="fixed bottom-7 right-7 z-50 w-14 h-14 bg-[#25D366] text-white rounded-full flex items-center justify-center text-2xl shadow-2xl shadow-green-500/40 hover:scale-110 hover:bg-[#1ebe5d] transition-all duration-300"
+            style={{ animation: "pulse-glow-wa 2.5s ease-in-out infinite" }}
+          >
+            <i className="fab fa-whatsapp" />
+          </motion.a>
+        )}
+      </AnimatePresence>
 
       {/* Book Consultation — bottom LEFT */}
       <AnimatePresence>

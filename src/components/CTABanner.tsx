@@ -41,7 +41,7 @@ export default function CTABanner() {
           className="flex flex-wrap gap-4 justify-center mb-12"
         >
           <a
-            href="#register"
+            href="/register"
             className="inline-flex items-center gap-2 px-8 py-4 bg-white text-[#F58220] font-bold rounded-full text-lg hover:bg-[#0D3B5C] hover:text-white hover:-translate-y-1 hover:shadow-2xl transition-all duration-300"
           >
             <i className="fas fa-rocket" /> {t("cta.btn_enroll")}
@@ -50,7 +50,7 @@ export default function CTABanner() {
             href="/consultation"
             className="inline-flex items-center gap-2 px-8 py-4 bg-transparent text-white font-bold rounded-full text-lg border-2 border-white/60 hover:bg-white/15 hover:border-white hover:-translate-y-1 transition-all duration-300"
           >
-            <i className="fas fa-calendar-check" /> Book Free Consultation
+            <i className="fas fa-calendar-check" /> {t("cta.btn_consult")}
           </a>
         </motion.div>
 

@@ -94,12 +94,12 @@ export default function CourseDetail({
             </div>
           </div>
           <div className={`flex gap-3`}>
-            <Link href="/#register"
+            <Link href={`/register?course=${course.slug}`}
               className="inline-flex items-center gap-2 px-8 py-4 bg-[#F58220] text-white font-bold rounded-2xl hover:bg-[#d9700f] transition-all hover:scale-105 shadow-lg shadow-orange-200 text-lg">
               <i className="fas fa-graduation-cap" />
               {isAr ? "سجّل الآن" : "Enroll Now"}
             </Link>
-            <Link href="/#contact"
+            <Link href="/contact"
               className="inline-flex items-center gap-2 px-6 py-4 border-2 border-[#0D3B5C] text-[#0D3B5C] font-bold rounded-2xl hover:bg-[#0D3B5C] hover:text-white transition-all">
               {isAr ? "اسأل سؤالاً" : "Ask a Question"}
             </Link>
@@ -285,7 +285,7 @@ export default function CourseDetail({
               ? "انضم إلى مئات المهنيين الذين تدرّبوا في Walk Academy"
               : "Join hundreds of professionals already trained by Walk Academy"}
           </p>
-          <Link href="/#register"
+          <Link href={`/register?course=${course.slug}`}
             className="inline-flex items-center gap-2 px-10 py-4 bg-[#F58220] text-white font-bold rounded-2xl hover:bg-[#d9700f] transition-all hover:scale-105 shadow-lg text-lg">
             <i className="fas fa-graduation-cap" />
             {isAr ? `سجّل في ${course.title_ar}` : `Enroll in ${course.title_en}`}

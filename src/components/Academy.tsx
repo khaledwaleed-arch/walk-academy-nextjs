@@ -48,17 +48,17 @@ export default function Academy({ initialCourses = [] }: { initialCourses?: Cour
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="text-[#0D3B5C] font-black text-2xl">{c.price}</div>
-                      <div className="text-gray-400 text-xs mt-0.5">Full program fee</div>
+                      <div className="text-gray-400 text-xs mt-0.5">{t("academy.full_fee")}</div>
                     </div>
                     <div className="flex items-center gap-2">
                       <Link
                         href={`/courses/${c.slug}`}
                         className="inline-flex items-center gap-1.5 px-4 py-2 border border-[#0D3B5C] text-[#0D3B5C] text-xs font-semibold rounded-full hover:bg-[#0D3B5C] hover:text-white transition-all duration-300"
                       >
-                        Details <i className="fas fa-external-link-alt text-xs" />
+                        {t("academy.details")} <i className="fas fa-external-link-alt text-xs" />
                       </Link>
                       <a
-                        href="#register"
+                        href={`/register?course=${c.slug}`}
                         className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#F58220] text-white text-sm font-semibold rounded-full hover:bg-[#d9700f] group-hover:shadow-lg group-hover:shadow-orange-400/30 transition-all duration-300"
                       >
                         {t("academy.register_cta")} <i className="fas fa-arrow-right text-xs" />

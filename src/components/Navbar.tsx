@@ -114,7 +114,7 @@ export default function Navbar() {
           </div>
 
           <a
-            href="#register"
+            href="/register"
             className="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 bg-[#F58220] text-white text-sm font-semibold rounded-full hover:bg-[#d9700f] hover:-translate-y-0.5 hover:shadow-lg hover:shadow-orange-500/30 transition-all duration-200"
           >
             <i className="fas fa-graduation-cap text-xs" />
@@ -183,7 +183,7 @@ export default function Navbar() {
               </div>
 
               <a
-                href="#register"
+                href="/register"
                 onClick={() => setMenuOpen(false)}
                 className="mt-2 flex items-center justify-center gap-2 px-5 py-3 bg-[#F58220] text-white font-semibold rounded-full"
               >

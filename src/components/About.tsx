@@ -26,9 +26,9 @@ export default function About() {
 
                 <div className="absolute bottom-6 left-6 right-6 grid grid-cols-3 gap-3">
                   {[
-                    { n: "500+", l: "Clients" },
-                    { n: "10+",  l: "Years" },
-                    { n: "4.9",  l: "Rating" },
+                    { n: "500+", l: t("about.stat_clients") },
+                    { n: "10+",  l: t("about.stat_years") },
+                    { n: "4.9",  l: t("about.stat_rating") },
                   ].map((s) => (
                     <div key={s.l} className="bg-white/10 backdrop-blur-sm rounded-2xl p-3 text-center border border-white/15">
                       <div className="text-[#F58220] font-black text-lg">{s.n}</div>

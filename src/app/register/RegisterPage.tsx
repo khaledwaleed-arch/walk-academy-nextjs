@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { useI18n } from "@/lib/i18n";
@@ -18,8 +19,9 @@ type Status = "idle" | "sending" | "ok" | "err";
 export default function RegisterPage() {
   const { t, isRTL, lang } = useI18n();
   const isAr = lang === "ar";
+  const searchParams = useSearchParams();
   const [courses, setCourses] = useState<CourseOption[]>([]);
-  const [selected, setSelected] = useState("");
+  const [selected, setSelected] = useState(searchParams.get("course") ?? "");
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("");
   const [status, setStatus] = useState<Status>("idle");
 
@@ -159,7 +161,7 @@ export default function RegisterPage() {
                   <div>
                     <label className="block text-sm font-semibold text-[#0D3B5C] mb-2">{t("register.email")} *</label>
                     <input
-                      type="email" name="email" required placeholder="your@email.com"
+                      type="email" name="email" required placeholder={t("consultation.email_placeholder")}
                       className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-sm focus:border-[#0D3B5C] focus:outline-none bg-gray-50 focus:bg-white transition-all"
                     />
                   </div>

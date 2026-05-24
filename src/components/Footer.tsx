@@ -145,6 +145,7 @@ export default function Footer() {
           <div className="flex gap-5">
             <a href="/privacy" className="hover:text-[#F58220] transition-colors">{t("footer.privacy")}</a>
             <a href="/terms" className="hover:text-[#F58220] transition-colors">{t("footer.terms")}</a>
+            <a href="/refund" className="hover:text-[#F58220] transition-colors">{t("footer.refund")}</a>
           </div>
         </div>
       </div>

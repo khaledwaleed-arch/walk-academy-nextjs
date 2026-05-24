@@ -151,7 +151,7 @@ export default function ConsultationPage() {
                   </label>
                   <input
                     name="email" type="email" value={form.email} onChange={handleChange}
-                    placeholder="your@email.com"
+                    placeholder={t("consultation.email_placeholder")}
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#F58220] focus:ring-2 focus:ring-[#F58220]/20 outline-none transition text-sm"
                     required
                     dir="ltr"

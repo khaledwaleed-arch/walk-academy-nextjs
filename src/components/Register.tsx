@@ -72,7 +72,7 @@ export default function Register() {
       <div className="relative max-w-3xl mx-auto px-6">
         <AnimatedSection className="text-center mb-10">
           <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#F58220]/20 border border-[#F58220]/40 text-[#F58220] text-sm font-semibold mb-4">
-            <i className="fas fa-user-plus" /> Enrollment
+            <i className="fas fa-user-plus" /> {t("register.badge")}
           </span>
           <h2 className="text-3xl lg:text-4xl font-bold text-white mt-2 mb-3">{t("register.title")}</h2>
           <p className="text-white/60">{t("register.subtitle")}</p>
@@ -84,8 +84,8 @@ export default function Register() {
               <div className="w-16 h-16 bg-[#F58220] rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <i className="fas fa-graduation-cap text-white text-2xl" />
               </div>
-              <h3 className="text-2xl font-bold">Start Your Journey Today</h3>
-              <p className="text-white/70 mt-1">Fill in your details and we&apos;ll contact you shortly</p>
+              <h3 className="text-2xl font-bold">{t("register.journey_title")}</h3>
+              <p className="text-white/70 mt-1">{t("register.journey_desc")}</p>
             </div>
 
             <div className="p-8">
@@ -95,41 +95,41 @@ export default function Register() {
                     <i className="fas fa-check text-green-500 text-3xl" />
                   </div>
                   <div>
-                    <h3 className="text-2xl font-bold text-[#0D3B5C]">Registration Complete!</h3>
-                    <p className="text-gray-500 text-sm mt-1">Our team will contact you within 24 hours to confirm your enrollment.</p>
+                    <h3 className="text-2xl font-bold text-[#0D3B5C]">{t("register.success_title")}</h3>
+                    <p className="text-gray-500 text-sm mt-1">{t("register.success_desc")}</p>
                   </div>
 
                   {paymentMethod === "instapay" && (
                     <div className="w-full bg-[#f5f0ff] border-2 border-[#3d1a6e]/30 rounded-2xl p-5">
                       <p className="font-bold text-[#3d1a6e] mb-3 flex items-center gap-2 justify-center">
-                        <i className="fas fa-credit-card" /> Send payment via InstaPay
+                        <i className="fas fa-credit-card" /> {t("register.instapay_title")}
                       </p>
                       <p className="font-bold text-[#3d1a6e] text-lg">khaledwaledd@instapay</p>
                       <a href="https://ipn.eg/S/khaledwaledd/instapay/6Lok2a" target="_blank" rel="noopener noreferrer"
                         className="inline-flex items-center gap-2 mt-3 px-6 py-2.5 bg-[#3d1a6e] text-white text-sm font-semibold rounded-full hover:bg-[#2d1254] transition-colors">
-                        <i className="fas fa-external-link-alt text-xs" /> Open InstaPay
+                        <i className="fas fa-external-link-alt text-xs" /> {t("register.instapay_open")}
                       </a>
                     </div>
                   )}
                   {paymentMethod === "wallet" && (
                     <div className="w-full bg-[#fff5f5] border-2 border-[#C8102E]/30 rounded-2xl p-5">
                       <p className="font-bold text-[#C8102E] mb-3 flex items-center gap-2 justify-center">
-                        <i className="fas fa-mobile-alt" /> Send payment via Mobile Wallet
+                        <i className="fas fa-mobile-alt" /> {t("register.wallet_title")}
                       </p>
                       <p className="font-bold text-[#C8102E] text-2xl tracking-widest">011 4370 6993</p>
-                      <p className="text-xs text-gray-400 mt-2">Keep your transfer receipt as proof of payment</p>
+                      <p className="text-xs text-gray-400 mt-2">{t("register.wallet_receipt")}</p>
                     </div>
                   )}
 
                   <button onClick={handleReset} className="w-full px-8 py-3 border-2 border-gray-200 text-gray-500 rounded-xl font-semibold hover:border-gray-300 hover:text-gray-700 transition-colors text-sm">
-                    Register Another Student
+                    {t("register.register_another")}
                   </button>
                 </div>
               ) : (
                 <form className="space-y-5" onSubmit={handleSubmit}>
                   <div className="flex items-center gap-2 mb-1">
                     <span className="flex items-center justify-center w-6 h-6 rounded-full bg-[#0D3B5C] text-white text-xs font-bold">1</span>
-                    <span className="text-sm font-bold text-[#0D3B5C]">Your Details</span>
+                    <span className="text-sm font-bold text-[#0D3B5C]">{t("register.step1")}</span>
                   </div>
                   <div className="grid sm:grid-cols-2 gap-5">
                     <div>
@@ -139,7 +139,7 @@ export default function Register() {
                     </div>
                     <div>
                       <label className="block text-sm font-semibold text-[#0D3B5C] mb-2">{t("register.email")} *</label>
-                      <input type="email" name="email" required placeholder="your@email.com"
+                      <input type="email" name="email" required placeholder={t("consultation.email_placeholder")}
                         className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-sm focus:border-[#0D3B5C] focus:outline-none bg-gray-50 focus:bg-white transition-all" />
                     </div>
                   </div>
@@ -153,7 +153,7 @@ export default function Register() {
                       <label className="block text-sm font-semibold text-[#0D3B5C] mb-2">{t("register.country")}</label>
                       <select name="country"
                         className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-sm focus:border-[#0D3B5C] focus:outline-none bg-gray-50 focus:bg-white transition-all appearance-none">
-                        <option value="">-- Select Country --</option>
+                        <option value="">{t("register.select_country")}</option>
                         {COUNTRIES.map((c) => <option key={c}>{c}</option>)}
                       </select>
                     </div>
@@ -163,7 +163,7 @@ export default function Register() {
                     <label className="block text-sm font-semibold text-[#0D3B5C] mb-2">{t("register.course")} *</label>
                     <select name="course" required value={selected} onChange={(e) => setSelected(e.target.value)}
                       className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-sm focus:border-[#0D3B5C] focus:outline-none bg-gray-50 focus:bg-white transition-all appearance-none">
-                      <option value="">-- Choose a Course --</option>
+                      <option value="">{t("register.select_course")}</option>
                       {courses.map((c) => (
                         <option key={c.value} value={c.value}>{c.label}{c.price ? ` — ${c.price}` : ""}</option>
                       ))}
@@ -173,7 +173,7 @@ export default function Register() {
                   {selectedCourse && (
                     <div className="flex items-center justify-between bg-[#0D3B5C] text-white rounded-2xl px-6 py-4">
                       <div>
-                        <div className="text-white/60 text-xs">Selected Course</div>
+                        <div className="text-white/60 text-xs">{t("register.selected_label")}</div>
                         <div className="font-semibold">{selectedCourse.label}</div>
                       </div>
                       <div className="text-[#F58220] font-black text-2xl">{selectedCourse.price}</div>
@@ -184,21 +184,21 @@ export default function Register() {
                     <div className="border-t-2 border-dashed border-gray-200 pt-5">
                       <div className="flex items-center gap-2 mb-4">
                         <span className="flex items-center justify-center w-6 h-6 rounded-full bg-[#F58220] text-white text-xs font-bold">2</span>
-                        <span className="text-sm font-bold text-[#0D3B5C]">Choose Payment Method</span>
+                        <span className="text-sm font-bold text-[#0D3B5C]">{t("register.step2")}</span>
                       </div>
                       <PaymentMethodSelector value={paymentMethod} onChange={setPaymentMethod} />
                     </div>
                   )}
 
                   {status === "err" && (
-                    <p className="text-red-500 text-sm text-center">Something went wrong. Please try again.</p>
+                    <p className="text-red-500 text-sm text-center">{t("register.error_msg")}</p>
                   )}
 
                   <button type="submit" disabled={status === "sending"}
                     className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-[#F58220] text-white font-bold rounded-xl text-lg hover:bg-[#d9700f] hover:shadow-xl hover:shadow-orange-400/30 hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
                   >
                     <i className={`fas ${status === "sending" ? "fa-spinner fa-spin" : "fa-lock"}`} />
-                    {status === "sending" ? "Submitting..." : "Complete Registration & Pay"}
+                    {status === "sending" ? t("register.sending") : t("register.submit")}
                   </button>
                 </form>
               )}

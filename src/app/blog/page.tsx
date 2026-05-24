@@ -22,13 +22,13 @@ export default async function BlogPage() {
 
   return (
     <main className="max-w-4xl mx-auto px-4 py-16">
-      <h1 className="text-4xl font-bold text-[#0D3B5C] mb-4">Blog</h1>
-      <p className="text-gray-600 mb-10">Insights, guides and updates from Walk Business.</p>
+      <h1 className="text-4xl font-bold text-[#0D3B5C] mb-2">Blog / المدونة</h1>
+      <p className="text-gray-600 mb-10">Insights, guides and updates from Walk Business · مقالات ونصائح من Walk Business</p>
 
       {posts.length === 0 ? (
         <div className="text-center py-20 text-gray-400">
-          <p className="text-xl">No posts published yet.</p>
-          <p className="mt-2">Check back soon!</p>
+          <p className="text-xl">No posts published yet. / لا توجد مقالات منشورة بعد.</p>
+          <p className="mt-2">Check back soon! · ترقّب التحديثات قريباً</p>
         </div>
       ) : (
         <div className="space-y-8">
@@ -52,7 +52,7 @@ export default async function BlogPage() {
                 href={`/blog/${post.slug}`}
                 className="inline-block mt-3 text-[#F58220] font-medium hover:underline"
               >
-                Read more →
+                Read more / اقرأ المزيد
               </Link>
             </article>
           ))}
